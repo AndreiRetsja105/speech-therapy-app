@@ -23,21 +23,27 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:'Nunito',-apple-system,'Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 
-/* ── NAV — collapsible menu ── */
-.navbar{background:var(--card);box-shadow:0 2px 12px rgba(0,0,0,.06);position:sticky;top:0;z-index:100;padding:0}
-.nav-top-row{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;gap:12px}
+/* ── NAV — full wrap / unwrap ── */
+:root{--nav-peek-height:14px;--nav-open-height:110px}
+body{padding-top:var(--nav-peek-height)}
+.navbar{background:var(--card);box-shadow:0 2px 12px rgba(0,0,0,.06);position:fixed;top:0;left:0;right:0;z-index:1000;padding:0;transform:translateY(0);transition:transform .35s ease,box-shadow .25s ease;will-change:transform}
+.navbar.collapsed{transform:translateY(calc(-1 * var(--nav-open-height) + var(--nav-peek-height)));box-shadow:0 1px 5px rgba(0,0,0,.08)}
+.nav-top-row{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;gap:12px;min-height:96px}
 .logo{font-family:'Quicksand';font-weight:700;font-size:26px;color:var(--pri);display:flex;align-items:center;gap:8px}
 .logo .icon{font-size:30px}
 .menu-toggle{padding:14px 24px;border:3px solid var(--pri);background:var(--pri-l);border-radius:16px;font-family:'Nunito',-apple-system,sans-serif;font-weight:800;font-size:22px;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(59,125,216,.15);color:var(--pri-d);display:flex;align-items:center;gap:8px}
 .menu-toggle:active{transform:scale(.95)}
-.menu-toggle.open{background:var(--pri-l);border-color:var(--pri);color:var(--pri-d)}
-.nav-menu{display:none;padding:10px 16px 18px;gap:10px;flex-wrap:wrap}
+.menu-toggle.open{background:var(--pri);border-color:var(--pri-d);color:#fff}
+.nav-menu{display:none;padding:10px 16px 18px;gap:10px;flex-wrap:wrap;border-top:1px solid #E8ECF1}
 .nav-menu.open{display:flex}
 .nav-pill{padding:16px 20px;border:none;background:var(--card);font-family:'Nunito',-apple-system,sans-serif;font-weight:800;font-size:18px;color:var(--txt);border-radius:18px;cursor:pointer;transition:all .2s;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.08);display:flex;align-items:center;gap:10px;flex:1;min-width:150px;justify-content:center;border:3px solid transparent}
 .nav-pill:active{transform:scale(.95)}
 .nav-pill.active{border-color:var(--pri);background:var(--pri-l);color:var(--pri-d)}
 .nav-pill .pill-emoji{font-size:32px;line-height:1}
 .nav-pill .pill-label{font-size:17px}
+.nav-hotzone-top{position:fixed;top:0;left:0;right:0;height:18px;z-index:1001;background:transparent}
+.nav-hotzone-corner{position:fixed;top:0;right:0;width:220px;height:110px;z-index:1001;background:transparent}
+@media (hover:none){.nav-hotzone-top,.nav-hotzone-corner{pointer-events:none}}
 
 .container{max-width:1200px;margin:0 auto;padding:22px}
 .section-header{margin-bottom:20px}
@@ -301,8 +307,10 @@ body{font-family:'Nunito',-apple-system,'Helvetica Neue',Arial,sans-serif;backgr
 </style>
 </head>
 <body>
+<div class="nav-hotzone-top" id="navHotzoneTop" aria-hidden="true"></div>
+<div class="nav-hotzone-corner" id="navHotzoneCorner" aria-hidden="true"></div>
 
-<nav class="navbar">
+<nav class="navbar" id="mainNavbar">
   <div class="nav-top-row">
     <div class="logo"><span class="icon">🗣️</span> ГовориЗнову</div>
     <button class="menu-toggle" id="menuToggle" onclick="toggleMenu()">☰ Меню</button>
@@ -913,20 +921,102 @@ function selectCategory(c){selectedCategory=c;currentIndex=0;filterList();update
 function saveStats(){localStorage.setItem('sa3_stats',JSON.stringify(stats))}
 function updateStats(){document.getElementById('statPracticed').textContent=stats.practiced;document.getElementById('statListened').textContent=stats.listened;document.getElementById('statSessions').textContent=stats.sessions;document.getElementById('statFavs').textContent=favorites.length;document.getElementById('statPuzzles').textContent=stats.puzzles||0;document.getElementById('statBuilt').textContent=stats.built||0}
 
-// ══════════ MENU TOGGLE ══════════
-function toggleMenu(){
-  var menu=document.getElementById('navMenu');
-  var btn=document.getElementById('menuToggle');
-  menu.classList.toggle('open');
-  btn.classList.toggle('open');
+// ══════════ NAV WRAP / UNWRAP ══════════
+const navbar=document.getElementById('mainNavbar');
+const navMenu=document.getElementById('navMenu');
+const menuToggleBtn=document.getElementById('menuToggle');
+const navHotzoneTop=document.getElementById('navHotzoneTop');
+const navHotzoneCorner=document.getElementById('navHotzoneCorner');
+let navWrapTimer=null;
+
+function syncNavbarHeight(){
+  const h=Math.max(navbar.scrollHeight,110);
+  document.documentElement.style.setProperty('--nav-open-height', h+'px');
 }
+
+function clearNavWrapTimer(){
+  if(navWrapTimer){
+    clearTimeout(navWrapTimer);
+    navWrapTimer=null;
+  }
+}
+
+function startNavWrapTimer(){
+  clearNavWrapTimer();
+  navWrapTimer=setTimeout(function(){
+    wrapNavbar();
+  },5000);
+}
+
+function unwrapNavbar(openMenu){
+  syncNavbarHeight();
+  navbar.classList.remove('collapsed');
+  if(openMenu){
+    navMenu.classList.add('open');
+    menuToggleBtn.classList.add('open');
+    menuToggleBtn.innerHTML='✕ Закрити';
+  }
+  startNavWrapTimer();
+}
+
+function wrapNavbar(){
+  clearNavWrapTimer();
+  navMenu.classList.remove('open');
+  menuToggleBtn.classList.remove('open');
+  menuToggleBtn.innerHTML='☰ Меню';
+  syncNavbarHeight();
+  navbar.classList.add('collapsed');
+}
+
+function toggleMenu(){
+  if(navMenu.classList.contains('open')){
+    wrapNavbar();
+  }else{
+    unwrapNavbar(true);
+  }
+}
+
+function keepNavbarOpen(){
+  syncNavbarHeight();
+  navbar.classList.remove('collapsed');
+  startNavWrapTimer();
+}
+
+function handleTypingWrap(event){
+  const key=event.key||'';
+  const isLetter=/^[\p{L}\p{N}]$/u.test(key);
+  const active=document.activeElement;
+  const typingTarget=active&&(active.tagName==='INPUT'||active.tagName==='TEXTAREA'||active.isContentEditable);
+  if(isLetter||typingTarget){
+    wrapNavbar();
+  }
+}
+
+navHotzoneTop.addEventListener('mouseenter',function(){unwrapNavbar(false)});
+navHotzoneCorner.addEventListener('mouseenter',function(){unwrapNavbar(true)});
+navbar.addEventListener('mouseenter',keepNavbarOpen);
+navbar.addEventListener('mouseleave',startNavWrapTimer);
+menuToggleBtn.addEventListener('focus',function(){unwrapNavbar(true)});
+window.addEventListener('resize',syncNavbarHeight);
+document.addEventListener('keydown',handleTypingWrap);
+document.addEventListener('click',function(event){
+  if(event.target.closest('.constr-letter')||event.target.closest('.word-block')||event.target.closest('.cross-kb-key')||event.target.closest('.cross-cell')){
+    wrapNavbar();
+  }
+});
+document.addEventListener('touchstart',function(event){
+  const touch=event.touches&&event.touches[0];
+  if(!touch) return;
+  if(touch.clientY<18 || (touch.clientY<110 && touch.clientX>window.innerWidth-220)){
+    unwrapNavbar(touch.clientX>window.innerWidth-220);
+  }
+},{passive:true});
 
 // ══════════ PAGE NAV ══════════
 function showPage(name){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+name).classList.add('active');
 var tabs=['dailyplan','practice','mouth','breathing','alphabet','constructor','categories','puzzle','memory','crossword','journal','favorites','stats'];var idx=tabs.indexOf(name);
 document.querySelectorAll('.nav-pill').forEach(function(p,i){p.classList.toggle('active',i===idx)});
-document.getElementById('navMenu').classList.remove('open');
-document.getElementById('menuToggle').classList.remove('open');
+wrapNavbar();
 if(name==='dailyplan')dpRender();
 if(name==='alphabet')renderAlphabet();
 if(name==='constructor'){initConstructor();}
@@ -1863,7 +1953,7 @@ function dpReset(){
 // Apply i18n for default language
 document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(I18N[lang]&&I18N[lang][k])el.textContent=I18N[lang][k]});
 document.querySelectorAll('[data-i18n-ph]').forEach(el=>{const k=el.getAttribute('data-i18n-ph');if(I18N[lang]&&I18N[lang][k])el.placeholder=I18N[lang][k]});
-syncTtsUi();filterList();updateCard();renderCategories();renderSampleImages();renderPuzzleGallery();setupDragDrop();renderAlphabet();initConstructor();dpRender();
+syncTtsUi();filterList();updateCard();renderCategories();renderSampleImages();renderPuzzleGallery();setupDragDrop();renderAlphabet();initConstructor();dpRender();syncNavbarHeight();setTimeout(function(){wrapNavbar()},300);
 
 // Update voice hint when going online/offline
 window.addEventListener('online',function(){updateVoiceHint()});
