@@ -28,14 +28,16 @@ body{font-family:'Nunito',-apple-system,'Helvetica Neue',Arial,sans-serif;backgr
 .nav-top-row{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;gap:12px}
 .logo{font-family:'Quicksand';font-weight:700;font-size:26px;color:var(--pri);display:flex;align-items:center;gap:8px}
 .logo .icon{font-size:30px}
-.menu-toggle{padding:12px 22px;border:3px solid #C9D1DC;background:#E8ECF1;border-radius:14px;font-family:'Nunito',-apple-system,sans-serif;font-weight:800;font-size:20px;cursor:pointer;transition:all .2s;box-shadow:0 3px 10px rgba(0,0,0,.1);color:var(--txt);display:flex;align-items:center;gap:8px}
+.menu-toggle{padding:14px 24px;border:3px solid var(--pri);background:var(--pri-l);border-radius:16px;font-family:'Nunito',-apple-system,sans-serif;font-weight:800;font-size:22px;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(59,125,216,.15);color:var(--pri-d);display:flex;align-items:center;gap:8px}
 .menu-toggle:active{transform:scale(.95)}
 .menu-toggle.open{background:var(--pri-l);border-color:var(--pri);color:var(--pri-d)}
-.nav-menu{display:none;padding:8px 16px 16px;gap:8px;flex-wrap:wrap}
+.nav-menu{display:none;padding:10px 16px 18px;gap:10px;flex-wrap:wrap}
 .nav-menu.open{display:flex}
-.nav-pill{padding:14px 20px;border:3px solid #C9D1DC;background:#E8ECF1;font-family:'Nunito',-apple-system,sans-serif;font-weight:800;font-size:18px;color:var(--txt);border-radius:16px;cursor:pointer;transition:all .2s;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.1);display:flex;align-items:center;gap:6px;flex:1;min-width:140px;justify-content:center}
+.nav-pill{padding:16px 20px;border:none;background:var(--card);font-family:'Nunito',-apple-system,sans-serif;font-weight:800;font-size:18px;color:var(--txt);border-radius:18px;cursor:pointer;transition:all .2s;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.08);display:flex;align-items:center;gap:10px;flex:1;min-width:150px;justify-content:center;border:3px solid transparent}
 .nav-pill:active{transform:scale(.95)}
-.nav-pill.active{background:var(--pri-l);color:var(--pri-d);border-color:var(--pri)}
+.nav-pill.active{border-color:var(--pri);background:var(--pri-l);color:var(--pri-d)}
+.nav-pill .pill-emoji{font-size:32px;line-height:1}
+.nav-pill .pill-label{font-size:17px}
 
 .container{max-width:1200px;margin:0 auto;padding:22px}
 .section-header{margin-bottom:20px}
@@ -82,7 +84,7 @@ body{font-family:'Nunito',-apple-system,'Helvetica Neue',Arial,sans-serif;backgr
 .cat-card{background:var(--card);border-radius:var(--rs);padding:20px;box-shadow:var(--sh);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:14px;border:3px solid transparent}
 .cat-card:active{transform:scale(.97)}
 .cat-card.selected{border-color:var(--pri);background:var(--pri-l)}
-.cat-card .cat-icon{font-size:36px}
+.cat-card .cat-icon{font-size:44px}
 .cat-card .cat-info h3{font-size:20px;font-weight:700}
 .cat-card .cat-info span{font-size:14px;color:var(--txt-l)}
 
@@ -90,16 +92,16 @@ body{font-family:'Nunito',-apple-system,'Helvetica Neue',Arial,sans-serif;backgr
 .fav-star.active{opacity:1;color:var(--acc)}
 
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:22px}
-.stat-card{background:var(--card);border-radius:var(--rs);padding:24px 20px;box-shadow:var(--sh);text-align:center}
-.stat-card .stat-icon{font-size:40px;margin-bottom:6px}
-.stat-card .stat-num{font-family:'Quicksand';font-weight:800;font-size:36px;color:var(--pri)}
-.stat-card .stat-label{font-size:16px;color:var(--txt-l);font-weight:600}
+.stat-card{background:var(--card);border-radius:var(--rs);padding:28px 20px;box-shadow:var(--sh);text-align:center}
+.stat-card .stat-icon{font-size:52px;margin-bottom:10px}
+.stat-card .stat-num{font-family:'Quicksand',-apple-system,sans-serif;font-weight:800;font-size:42px;color:var(--pri)}
+.stat-card .stat-label{font-size:17px;color:var(--txt-l);font-weight:700;margin-top:4px}
 
 /* ── PUZZLE ── */
 .puzzle-upload-area{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:40px;text-align:center;margin-bottom:20px;border:3px dashed #CBD5E0;cursor:pointer;transition:all .2s}
 .puzzle-upload-area:hover,.puzzle-upload-area.dragover{border-color:var(--pri);background:var(--pri-l)}
-.puzzle-upload-area .upload-icon{font-size:64px;margin-bottom:12px}
-.puzzle-upload-area h3{font-size:24px;font-weight:700;margin-bottom:6px}
+.puzzle-upload-area .upload-icon{font-size:80px;margin-bottom:16px}
+.puzzle-upload-area h3{font-size:26px;font-weight:700;margin-bottom:8px}
 .puzzle-upload-area p{color:var(--txt-l);font-size:18px}
 .puzzle-controls{display:flex;gap:10px;align-items:center;justify-content:center;background:var(--card);padding:14px 20px;border-radius:var(--r);box-shadow:var(--sh);margin-bottom:20px;flex-wrap:wrap}
 .puzzle-controls label{font-weight:700;font-size:18px}
@@ -196,9 +198,33 @@ body{font-family:'Nunito',-apple-system,'Helvetica Neue',Arial,sans-serif;backgr
 #page-constructor{padding-bottom:28px}
 #alphaGrid{min-height:240px}
 
+/* ── DAILY PLAN ── */
+.dp-overview{display:flex;gap:20px;align-items:center;background:var(--card);border-radius:var(--r);box-shadow:var(--sh-lg);padding:24px;margin-bottom:20px}
+.dp-day-display{text-align:center;min-width:100px}
+.dp-day-num{font-family:'Quicksand',-apple-system,sans-serif;font-weight:800;font-size:64px;color:var(--pri);line-height:1}
+.dp-day-label{font-size:18px;font-weight:700;color:var(--txt-l)}
+.dp-week-info{flex:1}
+.dp-week{font-size:20px;font-weight:800;color:var(--txt);margin-bottom:4px}
+.dp-stage{font-size:16px;font-weight:700;color:var(--pri);margin-bottom:4px}
+.dp-streak{font-size:16px;font-weight:700;color:var(--acc)}
+
+.dp-task{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:20px;margin-bottom:14px;border-left:5px solid var(--pri)}
+.dp-task.completed{border-left-color:var(--ok);background:var(--ok-l)}
+.dp-task-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.dp-task-title{font-family:'Quicksand',-apple-system,sans-serif;font-weight:800;font-size:20px;display:flex;align-items:center;gap:8px}
+.dp-task-icon{font-size:28px}
+.dp-task-check{width:44px;height:44px;border:3px solid #C9D1DC;border-radius:12px;background:#E8ECF1;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.dp-task-check.done{background:var(--ok-l);border-color:var(--ok);color:#22543D}
+.dp-task-desc{font-size:16px;color:var(--txt-l);line-height:1.5;margin-bottom:10px}
+.dp-task-words{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.dp-word{background:#E8ECF1;border:2px solid #C9D1DC;border-radius:12px;padding:10px 16px;font-weight:800;font-size:18px;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.dp-word:active{transform:scale(.94);background:var(--pri-l);border-color:var(--pri)}
+.dp-task-action{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;background:var(--pri-l);color:var(--pri-d);border:2px solid var(--pri);border-radius:12px;font-weight:800;font-size:16px;cursor:pointer;transition:all .2s}
+.dp-task-action:active{transform:scale(.95)}
+
 /* ── MOUTH EXERCISES ── */
-.mouth-card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:24px;margin-bottom:16px;display:flex;gap:20px;align-items:center;flex-wrap:wrap}
-.mouth-card .mc-icon{font-size:56px;flex-shrink:0}
+.mouth-card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:24px;margin-bottom:16px;display:flex;gap:20px;align-items:center;flex-wrap:wrap;border-left:5px solid var(--pri)}
+.mouth-card .mc-icon{font-size:64px;flex-shrink:0}
 .mouth-card .mc-info{flex:1;min-width:200px}
 .mouth-card .mc-title{font-family:'Quicksand',-apple-system,sans-serif;font-weight:800;font-size:22px;margin-bottom:6px}
 .mouth-card .mc-desc{font-size:16px;color:var(--txt-l);line-height:1.5}
@@ -208,12 +234,12 @@ body{font-family:'Nunito',-apple-system,'Helvetica Neue',Arial,sans-serif;backgr
 
 /* ── BREATHING ── */
 .breath-exercise{display:flex;flex-direction:column;align-items:center;padding:20px}
-.breath-circle{width:220px;height:220px;border-radius:50%;background:var(--pri-l);border:4px solid var(--pri);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 1s ease;margin:0 auto}
+.breath-circle{width:260px;height:260px;border-radius:50%;background:var(--pri-l);border:5px solid var(--pri);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 1s ease;margin:0 auto}
 .breath-circle.inhale{transform:scale(1.3);background:#D4EDDA;border-color:var(--ok)}
 .breath-circle.exhale{transform:scale(0.8);background:#FDE8E8;border-color:var(--danger)}
 .breath-circle.hold{transform:scale(1.15);background:#FFF3CD;border-color:var(--acc)}
-.breath-text{font-family:'Quicksand',-apple-system,sans-serif;font-weight:800;font-size:24px;text-align:center}
-.breath-timer{font-size:48px;font-weight:800;color:var(--pri);margin-top:4px}
+.breath-text{font-family:'Quicksand',-apple-system,sans-serif;font-weight:800;font-size:28px;text-align:center}
+.breath-timer{font-size:56px;font-weight:800;color:var(--pri);margin-top:6px}
 .breath-tip{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:20px;margin-bottom:12px}
 .breath-tip h4{font-size:20px;margin-bottom:6px}
 .breath-tip p{font-size:16px;color:var(--txt-l);line-height:1.5}
@@ -237,23 +263,23 @@ body{font-family:'Nunito',-apple-system,'Helvetica Neue',Arial,sans-serif;backgr
 .memory-controls label{font-weight:800;font-size:18px}
 .memory-stats{display:flex;gap:24px;align-items:center;justify-content:center;background:var(--card);padding:16px 22px;border-radius:var(--r);box-shadow:var(--sh);margin-bottom:18px}
 .memory-board{display:grid;gap:10px;justify-content:center;margin-bottom:24px}
-.mem-card{background:var(--pri);border-radius:var(--rs);aspect-ratio:1;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Quicksand';font-weight:800;font-size:22px;color:#fff;box-shadow:var(--sh);transition:all .3s;position:relative;overflow:hidden;min-height:80px;border:3px solid var(--pri-d);user-select:none}
+.mem-card{background:var(--pri);border-radius:var(--rs);aspect-ratio:1;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Quicksand',-apple-system,sans-serif;font-weight:800;font-size:22px;color:#fff;box-shadow:0 4px 16px rgba(0,0,0,.12);transition:all .3s;position:relative;overflow:hidden;min-height:90px;border:3px solid var(--pri-d);user-select:none}
 .mem-card.flipped{background:var(--card);color:var(--txt);border-color:#E2E8F0}
 .mem-card.matched{background:var(--ok-l);color:#22543D;border-color:var(--ok);cursor:default}
-.mem-card .mem-face{display:none;text-align:center;padding:6px;word-break:break-word;line-height:1.2}
-.mem-card.flipped .mem-face,.mem-card.matched .mem-face{display:flex;flex-direction:column;align-items:center;gap:2px}
-.mem-card .mem-back{font-size:36px}
+.mem-card .mem-face{display:none;text-align:center;padding:8px;word-break:break-word;line-height:1.2}
+.mem-card.flipped .mem-face,.mem-card.matched .mem-face{display:flex;flex-direction:column;align-items:center;gap:4px}
+.mem-card .mem-back{font-size:42px}
 .mem-card.flipped .mem-back,.mem-card.matched .mem-back{display:none}
-.mem-card .mem-emoji{font-size:28px}
-.mem-card .mem-text{font-size:18px;font-weight:800}
+.mem-card .mem-emoji{font-size:40px}
+.mem-card .mem-text{font-size:20px;font-weight:800}
 @keyframes memFlip{0%{transform:scaleX(1)}50%{transform:scaleX(0)}100%{transform:scaleX(1)}}
 .mem-card.flipping{animation:memFlip .4s ease}
 
 /* ── CROSSWORD / WORD FILL ── */
 .cross-controls{display:flex;gap:10px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
 .cross-word-card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh-lg);padding:28px 24px;margin-bottom:16px;text-align:center}
-.cross-hint{font-size:48px;margin-bottom:12px}
-.cross-hint-text{font-size:20px;color:var(--txt-l);margin-bottom:20px;font-weight:600}
+.cross-hint{font-size:72px;margin-bottom:16px}
+.cross-hint-text{font-size:22px;color:var(--txt-l);margin-bottom:24px;font-weight:600}
 .cross-letters{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:20px}
 .cross-cell{width:56px;height:66px;border:3px solid #E2E8F0;border-radius:14px;font-family:'Quicksand';font-weight:800;font-size:34px;text-align:center;text-transform:lowercase;background:var(--bg);outline:none;transition:all .2s;color:var(--txt)}
 .cross-cell:focus{border-color:var(--pri);background:var(--card);box-shadow:0 0 0 3px rgba(59,125,216,.2)}
@@ -282,25 +308,59 @@ body{font-family:'Nunito',-apple-system,'Helvetica Neue',Arial,sans-serif;backgr
     <button class="menu-toggle" id="menuToggle" onclick="toggleMenu()">☰ Меню</button>
   </div>
   <div class="nav-menu" id="navMenu">
-    <button class="nav-pill active" onclick="showPage('practice')">🎯 Практика</button>
-    <button class="nav-pill" onclick="showPage('mouth')">👅 Вправи для рота</button>
-    <button class="nav-pill" onclick="showPage('breathing')">🌬️ Дихання</button>
-    <button class="nav-pill" onclick="showPage('alphabet')">🔤 Абетка</button>
-    <button class="nav-pill" onclick="showPage('constructor')">🧱 Конструктор</button>
-    <button class="nav-pill" onclick="showPage('categories')">📂 Категорії</button>
-    <button class="nav-pill" onclick="showPage('puzzle')">🧩 Пазл</button>
-    <button class="nav-pill" onclick="showPage('memory')">🃏 Пам'ять</button>
-    <button class="nav-pill" onclick="showPage('crossword')">✏️ Заповни</button>
-    <button class="nav-pill" onclick="showPage('journal')">📓 Щоденник</button>
-    <button class="nav-pill" onclick="showPage('favorites')">⭐ Обране</button>
-    <button class="nav-pill" onclick="showPage('stats')">📊 Прогрес</button>
+    <button class="nav-pill active" onclick="showPage('dailyplan')" style="background:#E8F5E9;border-color:#66BB6A"><span class="pill-emoji">📅</span><span class="pill-label">Щоденний план</span></button>
+    <button class="nav-pill" onclick="showPage('practice')" style="background:#E8F5E9;border-color:#81C784"><span class="pill-emoji">🎯</span><span class="pill-label">Практика</span></button>
+    <button class="nav-pill" onclick="showPage('mouth')" style="background:#FFF3E0;border-color:#FFB74D"><span class="pill-emoji">👅</span><span class="pill-label">Вправи</span></button>
+    <button class="nav-pill" onclick="showPage('breathing')" style="background:#E3F2FD;border-color:#64B5F6"><span class="pill-emoji">🌬️</span><span class="pill-label">Дихання</span></button>
+    <button class="nav-pill" onclick="showPage('alphabet')" style="background:#F3E5F5;border-color:#CE93D8"><span class="pill-emoji">🔤</span><span class="pill-label">Абетка</span></button>
+    <button class="nav-pill" onclick="showPage('constructor')" style="background:#E0F2F1;border-color:#80CBC4"><span class="pill-emoji">🧱</span><span class="pill-label">Конструктор</span></button>
+    <button class="nav-pill" onclick="showPage('categories')" style="background:#FFF9C4;border-color:#FFF176"><span class="pill-emoji">📂</span><span class="pill-label">Категорії</span></button>
+    <button class="nav-pill" onclick="showPage('puzzle')" style="background:#FCE4EC;border-color:#F48FB1"><span class="pill-emoji">🧩</span><span class="pill-label">Пазл</span></button>
+    <button class="nav-pill" onclick="showPage('memory')" style="background:#E8EAF6;border-color:#9FA8DA"><span class="pill-emoji">🃏</span><span class="pill-label">Пам'ять</span></button>
+    <button class="nav-pill" onclick="showPage('crossword')" style="background:#EFEBE9;border-color:#BCAAA4"><span class="pill-emoji">✏️</span><span class="pill-label">Заповни</span></button>
+    <button class="nav-pill" onclick="showPage('journal')" style="background:#E0F7FA;border-color:#4DD0E1"><span class="pill-emoji">📓</span><span class="pill-label">Щоденник</span></button>
+    <button class="nav-pill" onclick="showPage('favorites')" style="background:#FFF8E1;border-color:#FFD54F"><span class="pill-emoji">⭐</span><span class="pill-label">Обране</span></button>
+    <button class="nav-pill" onclick="showPage('stats')" style="background:#E8F5E9;border-color:#A5D6A7"><span class="pill-emoji">📊</span><span class="pill-label">Прогрес</span></button>
   </div>
 </nav>
 
 <div class="container">
 
+<!-- ═══ DAILY PLAN ═══ -->
+<div id="page-dailyplan" class="page active">
+  <div class="section-header"><h2>📅 Щоденний план відновлення</h2><p id="dpStageDesc">Завантаження...</p></div>
+  
+  <!-- Day counter and progress -->
+  <div class="dp-overview" id="dpOverview">
+    <div class="dp-day-display">
+      <div class="dp-day-num" id="dpDayNum">1</div>
+      <div class="dp-day-label">день</div>
+    </div>
+    <div class="dp-week-info">
+      <div class="dp-week" id="dpWeek">Тиждень 1 з 52</div>
+      <div class="dp-stage" id="dpStage">Етап: Початок</div>
+      <div class="dp-streak" id="dpStreak">🔥 Серія: 0 днів</div>
+    </div>
+  </div>
+
+  <!-- Today's tasks -->
+  <div id="dpTasks"></div>
+  
+  <!-- Navigation -->
+  <div class="action-row" style="margin-top:16px">
+    <button class="big-btn btn-prev" onclick="dpPrevDay()">◀ Вчора</button>
+    <button class="big-btn btn-speak" onclick="dpToday()">📅 Сьогодні</button>
+    <button class="big-btn btn-next" onclick="dpNextDay()">Завтра ▶</button>
+  </div>
+  
+  <!-- Reset -->
+  <div style="text-align:center;margin-top:20px">
+    <button style="padding:10px 20px;border:2px solid #E2E8F0;background:var(--bg);border-radius:12px;font-size:14px;color:var(--txt-l);cursor:pointer" onclick="if(confirm('Скинути прогрес? Це не можна скасувати.'))dpReset()">🔄 Скинути план з початку</button>
+  </div>
+</div>
+
 <!-- ═══ PRACTICE ═══ -->
-<div id="page-practice" class="page active">
+<div id="page-practice" class="page">
   <div class="section-header"><h2 data-i18n="practice_title">Practice Speaking</h2><p data-i18n="practice_sub">Tap the speaker button to hear the word, then repeat it</p></div>
   <div class="progress-strip"><span class="label" data-i18n="session">Session</span><div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div><span class="count" id="progressCount">0/0</span></div>
   <div class="difficulty-row">
@@ -863,10 +923,11 @@ function toggleMenu(){
 
 // ══════════ PAGE NAV ══════════
 function showPage(name){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+name).classList.add('active');
-var tabs=['practice','mouth','breathing','alphabet','constructor','categories','puzzle','memory','crossword','journal','favorites','stats'];var idx=tabs.indexOf(name);
+var tabs=['dailyplan','practice','mouth','breathing','alphabet','constructor','categories','puzzle','memory','crossword','journal','favorites','stats'];var idx=tabs.indexOf(name);
 document.querySelectorAll('.nav-pill').forEach(function(p,i){p.classList.toggle('active',i===idx)});
 document.getElementById('navMenu').classList.remove('open');
 document.getElementById('menuToggle').classList.remove('open');
+if(name==='dailyplan')dpRender();
 if(name==='alphabet')renderAlphabet();
 if(name==='constructor'){initConstructor();}
 if(name==='puzzle')renderPuzzleGallery();
@@ -967,13 +1028,19 @@ en:{
   "Other":["please","thank you","yes","no","now","today","tomorrow","morning","night","more","very","the","a","to","in","on","for","with","is","not","and","but","or","this","that"]
 },
 uk:{
-  "Я/Ти":["я","ти","ми","він","вона","вони","мій","мені","твій","мене","це"],
-  "Дії":["хочу","потрібно","почуваю","маю","люблю","можу","допоможіть","йти","прийти","взяти","дати","відкрити","закрити","подзвонити","сидіти","стояти","ходити","їсти","пити","спати","читати","писати","бачити","чути","принести","покласти","увімкнути","вимкнути"],
-  "Речі":["воду","їжу","чай","суп","хліб","молоко","ліки","телефон","сумку","книгу","пальто","черевики","стілець","стіл","ліжко","двері","вікно","світло","подушку","ковдру","склянку","тарілку","чашку","ключ"],
-  "Місця":["додому","до лікарні","до парку","до школи","до аптеки","до ванної","на кухню","в кімнату","надвір","тут","там","в саду"],
-  "Люди":["лікаря","медсестру","сім'ю","друга","маму","тата","сестру","брата","дочку","сина","дитину","вчителя"],
-  "Почуття":["добре","погано","щасливий","сумний","втомлений","голодний","хочу пити","холодно","гаряче","краще","біль","сильний","нормально","спокійний"],
-  "Інше":["будь ласка","дякую","так","ні","зараз","сьогодні","завтра","вранці","вночі","більше","дуже","не","і","але","або","цей","той","мене","мені","до","в","на","для","з"]
+  "Я/Ти":["я","ти","ми","він","вона","вони","мій","моя","моє","мені","твій","мене","це","нас","вам","свій","наш"],
+  "Дії":["хочу","потрібно","почуваю","маю","люблю","можу","не можу","допоможіть","йти","прийти","взяти","дати","відкрити","закрити","подзвонити","сидіти","стояти","ходити","їсти","пити","спати","читати","писати","бачити","чути","принести","покласти","увімкнути","вимкнути","одягнути","зняти","помити","почистити","зробити","сказати","показати","знайти","чекати","відпочити"],
+  "Їжа":["воду","чай","каву","молоко","сік","суп","хліб","кашу","рибу","курку","рис","картоплю","яблуко","банан","масло","сир","яйце","цукор","печиво","йогурт","сніданок","обід","вечерю"],
+  "Речі":["ліки","телефон","окуляри","пульт","ключі","гаманець","сумку","книгу","газету","серветку","рушник","мило","гребінець","зубну щітку","годинник","тарілку","чашку","ложку"],
+  "Одяг":["сорочку","штани","шкарпетки","черевики","тапочки","пальто","куртку","шапку","піжаму","светр","сукню"],
+  "Дім":["ліжко","стілець","стіл","двері","вікно","світло","телевізор","подушку","ковдру","кран","душ","туалет","шафу","холодильник"],
+  "Місця":["додому","до лікарні","до лікаря","до аптеки","до магазину","до парку","до ванної","до туалету","на кухню","в кімнату","надвір","на балкон","тут","там","поруч","далеко"],
+  "Люди":["лікаря","медсестру","сім'ю","дружину","чоловіка","маму","тата","сестру","брата","дочку","сина","онука","бабусю","дідуся","друга","сусіда"],
+  "Тіло":["голова","рука","нога","спина","живіт","серце","очі","горло","зуби","болить","тисне","запаморочення","нудить","температура","тиск"],
+  "Почуття":["добре","погано","краще","гірше","нормально","втомлений","голодний","холодно","гаряче","боляче","страшно","самотньо","сумно","спокійно","тривожно","щасливий","сильний","слабкий"],
+  "Час":["зараз","потім","скоро","сьогодні","завтра","вчора","вранці","вдень","ввечері","вночі","через годину","після обіду","перед сном"],
+  "Фрази":["будь ласка","дякую","так","ні","добрий день","добрий ранок","на добраніч","вибачте","допоможіть мені","я не розумію","повторіть","говоріть повільніше","мені потрібно","я хочу","можна мені","все добре","як справи"],
+  "Зв'язки":["і","але","або","бо","що","як","де","коли","дуже","ще","вже","тільки","також","разом","без","після","перед","не"]
 }};
 
 let sentenceWords=[]; // array of words in current sentence
@@ -999,7 +1066,7 @@ function renderWordBlocks(){
     Object.entries(src).forEach(([cat,ws])=>ws.forEach(w=>words.push({word:w,cat})));
   }
   const catColors={"I/You":"#4A90D9","Verbs":"#48BB78","Things":"#F6AD55","Places":"#9F7AEA","People":"#FC8181","Feelings":"#ED64A6","Other":"#718096",
-    "Я/Ти":"#4A90D9","Дії":"#48BB78","Речі":"#F6AD55","Місця":"#9F7AEA","Люди":"#FC8181","Почуття":"#ED64A6","Інше":"#718096"};
+    "Я/Ти":"#4A90D9","Дії":"#48BB78","Їжа":"#FF8A65","Речі":"#F6AD55","Одяг":"#AB47BC","Дім":"#78909C","Місця":"#9F7AEA","Люди":"#FC8181","Тіло":"#E57373","Почуття":"#ED64A6","Час":"#4FC3F7","Фрази":"#66BB6A","Зв'язки":"#90A4AE"};
   grid.innerHTML=words.map(({word,cat})=>{
     const ew=word.replace(/'/g,"\\'");
     const col=catColors[cat]||'#718096';
@@ -1584,11 +1651,219 @@ function renderJournalHistory(){
   }).join('');
 }
 
+// ══════════════════════════════════════
+// ══════════ DAILY PLAN SYSTEM ════════
+// ══════════════════════════════════════
+
+// Recovery stages based on clinical research
+var DP_STAGES=[
+  {weeks:[1,4],name:'🌱 Початок',desc:'Прості слова, звуки, дихання. Зміцнюємо основи.',color:'#81C784'},
+  {weeks:[5,12],name:'📈 Зростання',desc:'Слова + прості фрази. Більше повторення.',color:'#64B5F6'},
+  {weeks:[13,26],name:'💪 Зміцнення',desc:'Фрази, короткі речення, ігри на пам\'ять.',color:'#FFB74D'},
+  {weeks:[27,52],name:'🎯 Майстерність',desc:'Повні речення, розмова, читання вголос.',color:'#AB47BC'}
+];
+
+// Daily task templates per stage
+var DP_TASK_TEMPLATES={
+  stage1:[ // Weeks 1-4
+    {icon:'👅',title:'Вправи для рота',desc:'Виконайте 5 вправ для язика та губ (5 хвилин)',action:'mouth',duration:5},
+    {icon:'🌬️',title:'Дихання',desc:'Одна дихальна вправа (3 хвилини)',action:'breathing',duration:3},
+    {icon:'🔤',title:'Звуки та літери',desc:'Прослухайте і повторіть ці звуки:',type:'sounds'},
+    {icon:'🗣️',title:'Прості слова',desc:'Прослухайте і повторіть кожне слово 3 рази:',type:'words_easy'},
+    {icon:'📓',title:'Щоденник',desc:'Запишіть як ви себе почуваєте сьогодні',action:'journal',duration:2}
+  ],
+  stage2:[ // Weeks 5-12
+    {icon:'👅',title:'Вправи для рота',desc:'Виконайте 7 вправ для язика та губ (5 хвилин)',action:'mouth',duration:5},
+    {icon:'🌬️',title:'Дихання',desc:'Глибоке дихання (3 хвилини)',action:'breathing',duration:3},
+    {icon:'🗣️',title:'Слова',desc:'Прослухайте і повторіть кожне слово 3 рази:',type:'words_easy'},
+    {icon:'💬',title:'Прості фрази',desc:'Прослухайте і повторіть ці фрази:',type:'words_medium'},
+    {icon:'🃏',title:'Гра на пам\'ять',desc:'Зіграйте одну гру на пам\'ять (4×3)',action:'memory',duration:5},
+    {icon:'📓',title:'Щоденник',desc:'Запишіть що ви робили сьогодні',action:'journal',duration:2}
+  ],
+  stage3:[ // Weeks 13-26
+    {icon:'👅',title:'Вправи для рота',desc:'Виконайте 8 вправ (5 хвилин)',action:'mouth',duration:5},
+    {icon:'🗣️',title:'Слова',desc:'Повторіть ці слова:',type:'words_easy'},
+    {icon:'💬',title:'Фрази',desc:'Прослухайте і повторіть:',type:'words_medium'},
+    {icon:'✏️',title:'Заповни слово',desc:'Вгадайте 3 слова у грі "Заповни"',action:'crossword',duration:5},
+    {icon:'🧱',title:'Побудуй речення',desc:'Складіть 2 речення у конструкторі',action:'constructor',duration:5},
+    {icon:'📓',title:'Щоденник',desc:'Напишіть 2-3 речення про свій день',action:'journal',duration:3}
+  ],
+  stage4:[ // Weeks 27-52
+    {icon:'👅',title:'Вправи для рота',desc:'Повний комплект вправ (5 хвилин)',action:'mouth',duration:5},
+    {icon:'💬',title:'Фрази',desc:'Прослухайте і повторіть:',type:'words_medium'},
+    {icon:'📖',title:'Речення',desc:'Прочитайте вголос і повторіть:',type:'words_hard'},
+    {icon:'🧱',title:'Побудуй речення',desc:'Складіть 3 речення у конструкторі',action:'constructor',duration:5},
+    {icon:'✏️',title:'Заповни слово',desc:'Вгадайте 5 слів',action:'crossword',duration:5},
+    {icon:'🃏',title:'Гра на пам\'ять',desc:'Зіграйте гру на пам\'ять (6×4)',action:'memory',duration:5},
+    {icon:'📓',title:'Щоденник',desc:'Напишіть 3-5 речень. Спробуйте прочитати вголос.',action:'journal',duration:5}
+  ]
+};
+
+// Saved progress
+var dpData=JSON.parse(localStorage.getItem('sa_dp')||'null')||{startDate:new Date().toISOString().split('T')[0],completed:{},currentDay:1,streak:0,lastCompleted:''};
+var dpViewDay=dpData.currentDay;
+
+function dpSave(){localStorage.setItem('sa_dp',JSON.stringify(dpData))}
+
+function dpGetStage(day){
+  var week=Math.ceil(day/7);
+  for(var i=0;i<DP_STAGES.length;i++){
+    if(week>=DP_STAGES[i].weeks[0]&&week<=DP_STAGES[i].weeks[1]) return i;
+  }
+  return 3;
+}
+
+function dpGetStageName(stageIdx){return DP_STAGES[stageIdx]||DP_STAGES[3]}
+
+function dpGetTasks(stageIdx){
+  var key='stage'+(stageIdx+1);
+  return DP_TASK_TEMPLATES[key]||DP_TASK_TEMPLATES.stage4;
+}
+
+// Get words for a specific day — uses seeded random for consistency
+function dpGetWords(day,difficulty,count){
+  var src=DATA.uk||DATA.en;
+  var pool=src[difficulty]||[];
+  if(!pool.length) return [];
+  // Seeded shuffle based on day number
+  var shuffled=pool.slice();
+  var seed=day*31+7;
+  for(var i=shuffled.length-1;i>0;i--){
+    seed=(seed*1103515245+12345)&0x7fffffff;
+    var j=seed%(i+1);
+    var tmp=shuffled[i];shuffled[i]=shuffled[j];shuffled[j]=tmp;
+  }
+  return shuffled.slice(0,Math.min(count,shuffled.length));
+}
+
+// Get sounds for early stage
+function dpGetSounds(day){
+  var sounds=[
+    ['А','О','У','И','І','Е'],
+    ['Б','П','Д','Т','Г','К'],
+    ['М','Н','Л','Р','В','Ф'],
+    ['С','З','Ш','Ж','Ч','Ц'],
+    ['ПА','БА','ТА','ДА','КА','ГА'],
+    ['МА','НА','ЛА','РА','ВА','ФА'],
+    ['АМ','АН','АЛ','АР','АВ','АС'],
+    ['ПА-ПА','БА-БА','ТА-ТА','МА-МА','НА-НА','ДА-ДА'],
+    ['ПО','БО','ТО','ДО','КО','ГО'],
+    ['МО','НО','ЛО','РО','ВО','СО'],
+    ['ПУ','БУ','ТУ','ДУ','КУ','ГУ'],
+    ['СА','ЗА','ША','ЖА','ЧА','ЦА'],
+    ['СО','ЗО','ШО','ЖО','ЩО','ЦЕ'],
+    ['ПАН','БАН','ТАН','МАН','ЛАН','КАН']
+  ];
+  return sounds[(day-1)%sounds.length];
+}
+
+function dpRender(){
+  var day=dpViewDay;
+  var week=Math.ceil(day/7);
+  var stageIdx=dpGetStage(day);
+  var stage=dpGetStageName(stageIdx);
+  var tasks=dpGetTasks(stageIdx);
+  var dayCompleted=dpData.completed['d'+day]||{};
+  var allDone=tasks.every(function(_,i){return dayCompleted['t'+i]});
+  
+  // Update header
+  document.getElementById('dpDayNum').textContent=day;
+  document.getElementById('dpWeek').textContent='Тиждень '+week+' з 52';
+  document.getElementById('dpStage').textContent=stage.name;
+  document.getElementById('dpStage').style.color=stage.color;
+  document.getElementById('dpStageDesc').textContent=stage.desc;
+  document.getElementById('dpStreak').textContent='🔥 Серія: '+dpData.streak+' дн. '+( allDone?'✅ День завершено!':'');
+  
+  // Render tasks
+  var html='';
+  tasks.forEach(function(task,ti){
+    var done=dayCompleted['t'+ti];
+    var words=[];
+    if(task.type==='sounds') words=dpGetSounds(day);
+    else if(task.type==='words_easy') words=dpGetWords(day,'easy',5).map(function(w){return w.word});
+    else if(task.type==='words_medium') words=dpGetWords(day,'medium',3).map(function(w){return w.word});
+    else if(task.type==='words_hard') words=dpGetWords(day,'hard',2).map(function(w){return w.word});
+    
+    html+='<div class="dp-task'+(done?' completed':'')+'">';
+    html+='<div class="dp-task-header">';
+    html+='<div class="dp-task-title"><span class="dp-task-icon">'+task.icon+'</span> '+task.title+'</div>';
+    html+='<button class="dp-task-check'+(done?' done':'')+'" onclick="dpToggleTask('+ti+')">'+(done?'✅':'☐')+'</button>';
+    html+='</div>';
+    html+='<div class="dp-task-desc">'+task.desc+'</div>';
+    
+    if(words.length){
+      html+='<div class="dp-task-words">';
+      words.forEach(function(w){
+        var ew=w.replace(/'/g,"\\'");
+        html+='<div class="dp-word" onclick="speakAny(\''+ew+'\')">'+w+' 🔊</div>';
+      });
+      html+='</div>';
+    }
+    
+    if(task.action){
+      html+='<button class="dp-task-action" onclick="showPage(\''+task.action+'\')">▶ Перейти до вправи</button>';
+    }
+    
+    html+='</div>';
+  });
+  
+  document.getElementById('dpTasks').innerHTML=html;
+}
+
+function dpToggleTask(ti){
+  var key='d'+dpViewDay;
+  if(!dpData.completed[key]) dpData.completed[key]={};
+  dpData.completed[key]['t'+ti]=!dpData.completed[key]['t'+ti];
+  
+  // Check if all tasks for this day are done
+  var stageIdx=dpGetStage(dpViewDay);
+  var tasks=dpGetTasks(stageIdx);
+  var allDone=tasks.every(function(_,i){return dpData.completed[key]['t'+i]});
+  
+  if(allDone){
+    var today=new Date().toISOString().split('T')[0];
+    if(dpData.lastCompleted===''||dpData.lastCompleted!==today){
+      // Check streak
+      var yesterday=new Date(Date.now()-86400000).toISOString().split('T')[0];
+      if(dpData.lastCompleted===yesterday||dpData.lastCompleted===''){
+        dpData.streak++;
+      } else if(dpData.lastCompleted!==today){
+        dpData.streak=1;
+      }
+      dpData.lastCompleted=today;
+      // Auto advance current day
+      if(dpViewDay===dpData.currentDay&&dpData.currentDay<365){
+        dpData.currentDay++;
+      }
+    }
+  }
+  
+  dpSave();
+  dpRender();
+}
+
+function dpNextDay(){
+  if(dpViewDay<365){dpViewDay++;dpRender();}
+}
+function dpPrevDay(){
+  if(dpViewDay>1){dpViewDay--;dpRender();}
+}
+function dpToday(){
+  dpViewDay=dpData.currentDay;
+  dpRender();
+}
+function dpReset(){
+  dpData={startDate:new Date().toISOString().split('T')[0],completed:{},currentDay:1,streak:0,lastCompleted:''};
+  dpViewDay=1;
+  dpSave();
+  dpRender();
+}
+
 // ══════════ STARTUP ══════════ (after all consts/functions defined) ══════════
 // Apply i18n for default language
 document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(I18N[lang]&&I18N[lang][k])el.textContent=I18N[lang][k]});
 document.querySelectorAll('[data-i18n-ph]').forEach(el=>{const k=el.getAttribute('data-i18n-ph');if(I18N[lang]&&I18N[lang][k])el.placeholder=I18N[lang][k]});
-syncTtsUi();filterList();updateCard();renderCategories();renderSampleImages();renderPuzzleGallery();setupDragDrop();renderAlphabet();initConstructor();
+syncTtsUi();filterList();updateCard();renderCategories();renderSampleImages();renderPuzzleGallery();setupDragDrop();renderAlphabet();initConstructor();dpRender();
 
 // Update voice hint when going online/offline
 window.addEventListener('online',function(){updateVoiceHint()});
