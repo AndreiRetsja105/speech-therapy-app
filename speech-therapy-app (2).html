@@ -144,15 +144,15 @@ body{font-family:'Nunito',-apple-system,'Helvetica Neue',Arial,sans-serif;backgr
 .alpha-switch.active{border-color:var(--pri);background:var(--pri-l);color:var(--pri-d)}
 
 /* ── SENTENCE BUILDER — BIG ── */
-.constructor-area{background:var(--card);border-radius:var(--r);box-shadow:var(--sh-lg);padding:16px;margin-bottom:14px;position:sticky;top:60px;z-index:50}
-.sentence-display{min-height:56px;background:var(--bg);border-radius:var(--rs);padding:12px;margin-bottom:12px;display:flex;align-items:center;flex-wrap:wrap;gap:8px}
-.sent-placeholder{color:var(--txt-l);font-size:18px}
-.sent-word{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:var(--card);border:2.5px solid var(--pri);border-radius:14px;font-family:'Quicksand',-apple-system,sans-serif;font-weight:800;font-size:22px;color:var(--pri-d);box-shadow:var(--sh);animation:letterPop .25s ease;cursor:pointer;transition:all .15s}
+.constructor-area{background:var(--card);border-radius:var(--r);box-shadow:var(--sh-lg);padding:24px;margin-bottom:22px}
+.sentence-display{min-height:90px;background:var(--bg);border-radius:var(--rs);padding:18px;margin-bottom:18px;display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+.sent-placeholder{color:var(--txt-l);font-size:20px}
+.sent-word{display:inline-flex;align-items:center;gap:8px;padding:14px 20px;background:var(--card);border:2.5px solid var(--pri);border-radius:14px;font-family:'Quicksand';font-weight:800;font-size:24px;color:var(--pri-d);box-shadow:var(--sh);animation:letterPop .25s ease;cursor:pointer;transition:all .15s}
 .sent-word:hover{border-color:var(--danger);background:var(--danger-l);color:#C53030}
-.sent-word .sw-remove{font-size:14px;opacity:.4}
+.sent-word .sw-remove{font-size:16px;opacity:.4}
 .sent-word:hover .sw-remove{opacity:1}
 @keyframes letterPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
-.constructor-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.constructor-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
 
 .block-cat-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
 .block-cat-btn{padding:12px 22px;border:2.5px solid #C9D1DC;background:#E8ECF1;border-radius:30px;font-family:'Nunito';font-weight:800;font-size:17px;cursor:pointer;transition:all .2s;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.1);color:var(--txt)}
@@ -175,8 +175,8 @@ body{font-family:'Nunito',-apple-system,'Helvetica Neue',Arial,sans-serif;backgr
 .constr-letter.constr-space{grid-column:span 3;min-height:64px;font-size:22px}
 
 /* Mode toggle in constructor */
-.mode-toggle{display:flex;gap:6px;margin-bottom:14px}
-.mode-btn{flex:1;padding:14px;border:3px solid #C9D1DC;background:#E8ECF1;border-radius:var(--rs);font-family:'Nunito',-apple-system,sans-serif;font-weight:800;font-size:20px;cursor:pointer;transition:all .2s;text-align:center;box-shadow:0 3px 10px rgba(0,0,0,.1);color:var(--txt)}
+.mode-toggle{display:flex;gap:8px;margin-bottom:20px}
+.mode-btn{flex:1;padding:22px;border:3px solid #C9D1DC;background:#E8ECF1;border-radius:var(--rs);font-family:'Nunito';font-weight:800;font-size:24px;cursor:pointer;transition:all .2s;text-align:center;box-shadow:0 3px 10px rgba(0,0,0,.1);color:var(--txt)}
 .mode-btn.active{border-color:var(--pri);background:var(--pri-l);color:var(--pri-d)}
 
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(59,125,216,.4)}70%{box-shadow:0 0 0 18px rgba(59,125,216,0)}100%{box-shadow:0 0 0 0 rgba(59,125,216,0)}}
@@ -325,7 +325,8 @@ body{font-family:'Nunito',-apple-system,'Helvetica Neue',Arial,sans-serif;backgr
     <button class="big-btn btn-next" onclick="nextWord()"><span data-i18n="btn_next">Next</span> <span class="btn-icon">▶️</span></button>
   </div>
   <div class="controls-row">
-    <label>🎙️ Голос:</label><select id="voiceSelect" onchange="updateVoice()"></select>
+    <label>🗣️ Provider:</label><select id="ttsProviderSelect" onchange="setTtsProvider(this.value)"><option value="browser">Browser</option><option value="google">Google Cloud</option></select>
+    <label>🎙️ <span data-i18n="voice">Voice</span>:</label><select id="voiceSelect" onchange="updateVoice()"></select>
     <label>⏱️ <span data-i18n="speed">Speed</span>:</label><input type="range" id="speedRange" min="0.3" max="1.2" step="0.1" value="0.8" oninput="updateSpeed()"><span class="speed-val" id="speedVal">0.8×</span>
     <span class="voice-provider-note" id="ttsNote">Browser speech is active</span>
   </div>
@@ -394,22 +395,22 @@ body{font-family:'Nunito',-apple-system,'Helvetica Neue',Arial,sans-serif;backgr
 
 <!-- ═══ CONSTRUCTOR ═══ -->
 <div id="page-constructor" class="page">
-  <div id="constrHeader" class="section-header"><h2>🧱 Конструктор Речень</h2><p>Використовуйте блоки слів або літери для побудови речень!</p></div>
+  <div class="section-header"><h2 data-i18n="constr_title">🧱 Sentence Builder</h2><p data-i18n="constr_sub">Tap word blocks to build sentences — or use letters to create your own words!</p></div>
 
-  <!-- Sentence display — stays visible at top -->
-  <div class="constructor-area" id="constructorArea">
-    <div class="sentence-display" id="sentenceDisplay"><span class="sent-placeholder">Натискайте блоки слів або літери нижче...</span></div>
+  <!-- Built sentence area -->
+  <div class="constructor-area">
+    <div class="sentence-display" id="sentenceDisplay"><span class="sent-placeholder" data-i18n="constr_placeholder">Tap word blocks or letters below...</span></div>
     <div class="constructor-actions">
-      <button class="big-btn btn-speak" onclick="speakSentence()" style="flex:2"><span class="btn-icon">🔊</span> Слухати</button>
-      <button class="big-btn btn-prev" onclick="undoSentence()"><span class="btn-icon">⌫</span> Назад</button>
-      <button class="big-btn btn-next" onclick="clearSentence()"><span class="btn-icon">🗑️</span> Очистити</button>
+      <button class="big-btn btn-speak" onclick="speakSentence()" style="flex:2"><span class="btn-icon">🔊</span> <span data-i18n="btn_listen">Listen</span></button>
+      <button class="big-btn btn-prev" onclick="undoSentence()"><span class="btn-icon">⌫</span> <span data-i18n="constr_delete">Undo</span></button>
+      <button class="big-btn btn-next" onclick="clearSentence()"><span class="btn-icon">🗑️</span> <span data-i18n="constr_clear">Clear</span></button>
     </div>
   </div>
 
-  <!-- Mode toggle — compact -->
-  <div class="mode-toggle" id="modeToggle">
-    <button class="mode-btn active" id="modeWords" onclick="setConstructorMode('words')">📦 Блоки слів</button>
-    <button class="mode-btn" id="modeLetters" onclick="setConstructorMode('letters')">🔤 Літери</button>
+  <!-- Mode toggle -->
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="modeWords" onclick="setConstructorMode('words')">📦 <span data-i18n="constr_mode_words">Word Blocks</span></button>
+    <button class="mode-btn" id="modeLetters" onclick="setConstructorMode('letters')">🔤 <span data-i18n="constr_mode_letters">Letters</span></button>
   </div>
 
   <!-- Word blocks section -->
@@ -418,8 +419,9 @@ body{font-family:'Nunito',-apple-system,'Helvetica Neue',Arial,sans-serif;backgr
     <div class="word-blocks-grid" id="wordBlocksGrid"></div>
   </div>
 
-  <!-- Letter keyboard section -->
+  <!-- Letter keyboard section (hidden by default) -->
   <div id="constructorLettersSection" style="display:none">
+    <div class="section-header"><p data-i18n="constr_letters_hint">Tap + to add a letter to your sentence. Tap 🔊 to hear it. Build any word you want!</p></div>
     <div class="constr-letter-grid" id="constrLetterGrid"></div>
   </div>
 </div>
@@ -657,7 +659,7 @@ for(const lc of Object.keys(EXTRA_WORD_DICT)){WORD_DICT[lc]=[...new Set([...(WOR
 let difficulty='easy',currentIndex=0,currentList=[];
 let favorites=JSON.parse(localStorage.getItem('sa3_favs')||'[]');
 let stats=JSON.parse(localStorage.getItem('sa3_stats')||'{"practiced":0,"listened":0,"sessions":1,"puzzles":0,"built":0}');
-let selectedCategory=null,voices=[],selectedVoice=null,speed=0.8;
+let selectedCategory=null,voices=[],selectedVoice=null,speed=0.8,ttsProvider=localStorage.getItem('sa3_tts_provider')||'browser',googleTtsEndpoint=localStorage.getItem('sa3_google_tts_endpoint')||'';
 let puzzleGrid=3,puzzleImage=null,puzzlePieces=[],puzzleSelectedIndex=-1,puzzleMoves=0,puzzleTimerInterval=null,puzzleSeconds=0,croppedCanvas=null;
 let alphabetMode=lang;
 let puzzleGallery=JSON.parse(localStorage.getItem('sa3_puzzle_gallery')||'[]');
@@ -670,23 +672,20 @@ setTimeout(loadVoices,500);
 setTimeout(loadVoices,1500);
 
 
-function syncTtsUi(){updateVoiceHint()}
-
-// ══════════ DEVICE DETECTION ══════════
-var deviceInfo=(function(){
-  var ua=navigator.userAgent||'';
-  var isIOS=/iPad|iPhone|iPod/.test(ua)||(/Macintosh/.test(ua)&&'ontouchend' in document);
-  var isAndroid=/Android/i.test(ua);
-  var isSamsung=/Samsung|SM-/i.test(ua);
-  var isChrome=/Chrome/i.test(ua)&&!/Edge/i.test(ua);
-  var isSafari=/Safari/i.test(ua)&&!/Chrome/i.test(ua);
-  return {isIOS:isIOS,isAndroid:isAndroid,isSamsung:isSamsung,isChrome:isChrome,isSafari:isSafari,
-    name:isIOS?'iPad/iPhone':(isSamsung?'Samsung':(isAndroid?'Android':'Комп\'ютер'))};
-})();
-
+function syncTtsUi(){
+  const sel=document.getElementById('ttsProviderSelect');
+  if(sel)sel.value=ttsProvider;
+  updateVoiceHint();
+}
+function setTtsProvider(v){
+  ttsProvider=v;
+  localStorage.setItem('sa3_tts_provider',v);
+  syncTtsUi();
+}
 function loadVoices(){
   var all=window.speechSynthesis.getVoices();
-  var ukVoices=all.filter(function(v){return /^uk/i.test(v.lang)||/ukrain/i.test(v.name)});
+  var isUkNative=function(v){return /^uk/i.test(v.lang)||/ukrain/i.test(v.name)};
+  var ukVoices=all.filter(isUkNative);
   if(ukVoices.length){
     voices=ukVoices;
     ukVoiceQuality='native';
@@ -694,94 +693,55 @@ function loadVoices(){
     voices=[];
     ukVoiceQuality='none';
   }
-  var s=document.getElementById('voiceSelect');if(!s)return;
-  s.innerHTML='';
-  if(voices.length){
-    voices.forEach(function(v,i){
-      var o=document.createElement('option');o.value=i;
-      o.textContent=v.name.replace(/Google |Microsoft |Apple /g,'')+' ✓';
-      s.appendChild(o);
-    });
-    s.value=0;
-  } else {
+  var s=document.getElementById('voiceSelect');s.innerHTML='';
+  if(!voices.length){
     var o=document.createElement('option');o.value='';
-    o.textContent='Голос не встановлено';
-    s.appendChild(o);
+    o.textContent=navigator.onLine?'Автоматичний голос (Google)':'Встановіть укр. голос у налаштуваннях';
+    s.appendChild(o);selectedVoice=null;updateVoiceHint();return;
   }
-  updateVoice();updateVoiceHint();
+  voices.forEach(function(v,i){var o=document.createElement('option');o.value=i;o.textContent=v.name+' ✓';s.appendChild(o)});
+  s.value=0;updateVoice();updateVoiceHint();
 }
 var ukVoiceQuality='none';
 function updateVoice(){selectedVoice=voices[document.getElementById('voiceSelect').value]||null;updateVoiceHint()}
-
 function updateVoiceHint(){
   var note=document.getElementById('ttsNote');if(!note)return;
-  if(ukVoiceQuality==='native'){
-    note.textContent='✓ Українська мова — '+deviceInfo.name;
-  } else {
-    var hint='📱 '+deviceInfo.name+': ';
-    if(deviceInfo.isIOS) hint+='Налаштування → Основні → Мовлення → Голоси → Українська → завантажити "Lesya"';
-    else if(deviceInfo.isSamsung) hint+='Налаштування → Загальне керування → Мова та введення → Синтез мовлення → Установити укр. голос';
-    else if(deviceInfo.isAndroid) hint+='Налаштування → Мова → Синтез мовлення → Google TTS → Українська';
-    else hint+='Налаштування → Мова → Додати голос → Українська';
-    note.textContent=hint;
-  }
+  if(ukVoiceQuality==='native') note.textContent='✓ Українська мова — голос встановлено';
+  else if(navigator.onLine) note.textContent='✓ Українська мова (Google, онлайн)';
+  else note.textContent='⚠ Офлайн — встановіть голос: Налаштування → Мовлення → Українська';
 }
 function updateSpeed(){speed=parseFloat(document.getElementById('speedRange').value);document.getElementById('speedVal').textContent=speed.toFixed(1)+'×'}
 
-// ══════════ SPEECH ENGINE ══════════
+// ══════════ SPEECH ══════════
 
+// Check if we have a REAL Ukrainian browser voice
 function hasNativeUkVoice(){
-  return window.speechSynthesis.getVoices().some(function(v){return /^uk/i.test(v.lang)||/ukrain/i.test(v.name)});
+  const all=window.speechSynthesis.getVoices();
+  return all.some(v=>/^uk/i.test(v.lang)||/ukrain/i.test(v.name));
 }
 
-// Browser speech synthesis — works on all devices
-function speakBrowser(text,rate,withMainButton){
-  window.speechSynthesis.cancel();
-  var u=new SpeechSynthesisUtterance(text);
-  u.lang='uk-UA';
-  u.rate=rate||speed;
-  u.pitch=1;
-  // Find best voice
-  var allVoices=window.speechSynthesis.getVoices();
-  if(selectedVoice){
-    u.voice=selectedVoice;
-  } else if(allVoices.length){
-    var ukV=allVoices.find(function(v){return /^uk/i.test(v.lang)||/ukrain/i.test(v.name)});
-    if(ukV) u.voice=ukV;
-    else u.voice=allVoices[0]; // any voice — browser will try to read Ukrainian
-  }
-  var btn2=withMainButton?document.getElementById('speakBtn'):null;
-  if(btn2)btn2.classList.add('speaking');
-  u.onend=function(){if(btn2)btn2.classList.remove('speaking')};
-  u.onerror=function(){if(btn2)btn2.classList.remove('speaking')};
-  // iOS Safari needs direct speak, Chrome needs delay after cancel
-  if(deviceInfo.isIOS){
-    window.speechSynthesis.speak(u);
-  } else {
-    setTimeout(function(){window.speechSynthesis.speak(u)},50);
-  }
-  return true;
-}
-
-// Google Translate TTS — works as fallback when no native voice
-function playGoogleTranslateTTS(text,langCode){
+// Google Translate TTS — free, no API key needed, real Ukrainian voice
+function playGoogleTranslateTTS(text, langCode, rate){
   return new Promise(function(resolve){
     var fellBack=false;
     function doFallback(){
       if(fellBack)return;
       fellBack=true;
-      speakBrowser(text,speed,false);
+      speakBrowser(text, rate, false);
       resolve();
     }
     var chunks=[];
     if(text.length>190){
-      var words=text.split(' ');var chunk='';
+      var words=text.split(' ');
+      var chunk='';
       words.forEach(function(w){
         if((chunk+' '+w).length>190){chunks.push(chunk.trim());chunk=w;}
         else chunk+=(chunk?' ':'')+w;
       });
       if(chunk)chunks.push(chunk.trim());
-    } else {chunks.push(text);}
+    } else {
+      chunks.push(text);
+    }
     var idx=0;
     function playNext(){
       if(idx>=chunks.length){resolve();return;}
@@ -793,38 +753,78 @@ function playGoogleTranslateTTS(text,langCode){
       audio.onended=function(){idx++;playNext()};
       audio.onerror=function(){doFallback()};
       var p=audio.play();
-      if(p&&p.catch)p.catch(function(){doFallback()});
+      if(p&&p.catch) p.catch(function(){doFallback()});
     }
     playNext();
   });
 }
 
-// Main speak function — tries best method for each device
-async function smartSpeak(text,rate,withMainButton){
+// Custom Google Cloud endpoint (if user set one)
+async function playViaGoogleCloud(text,rate){
+  if(!googleTtsEndpoint){
+    // Fallback to Google Translate TTS
+    return playGoogleTranslateTTS(text, lang==='uk'?'uk':'en', rate);
+  }
+  const res=await fetch(googleTtsEndpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,lang:lang==='uk'?'uk-UA':'en-US',rate:rate||speed})});
+  if(!res.ok)throw new Error('TTS request failed');
+  const blob=await res.blob();
+  const audio=new Audio(URL.createObjectURL(blob));
+  await audio.play();
+  audio.onended=()=>URL.revokeObjectURL(audio.src);
+  return true;
+}
+
+function speakBrowser(text,rate,withMainButton=false){
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='uk-UA';
+  u.rate=rate||speed;
+  u.pitch=1;
+  if(selectedVoice){
+    u.voice=selectedVoice;
+  } else {
+    var allVoices=window.speechSynthesis.getVoices();
+    // ONLY use Ukrainian voice — never Russian, never Polish
+    var ukVoice=allVoices.find(function(vv){return /^uk/i.test(vv.lang)||/ukrain/i.test(vv.name)});
+    if(ukVoice) u.voice=ukVoice;
+    // If no Ukrainian voice found, don't set any voice — just use lang='uk-UA' hint
+  }
+  const btn=document.getElementById('speakBtn');
+  if(withMainButton&&btn)btn.classList.add('speaking');
+  u.onend=()=>{if(withMainButton&&btn)btn.classList.remove('speaking')};
+  u.onerror=(e)=>{console.warn('Speech error:',e);if(withMainButton&&btn)btn.classList.remove('speaking')};
+  setTimeout(()=>window.speechSynthesis.speak(u),50);
+  return true;
+}
+
+// Smart speak — OFFLINE FIRST, then try Google TTS as enhancement
+async function smartSpeak(text, rate, withMainButton){
   var btn=withMainButton?document.getElementById('speakBtn'):null;
   if(btn)btn.classList.add('speaking');
   try{
-    if(hasNativeUkVoice()){
-      // Best: native Ukrainian voice (iPad with Lesya, Android with Google TTS uk)
-      speakBrowser(text,rate,withMainButton);
-    } else if(navigator.onLine){
-      // Online but no native voice — try Google Translate
-      await playGoogleTranslateTTS(text,'uk');
-    } else {
-      // Offline, no native voice — use any available voice
-      speakBrowser(text,rate,withMainButton);
+    // Custom Google Cloud endpoint (user configured)
+    if(ttsProvider==='google'){
+      await playViaGoogleCloud(text,rate);
+    }
+    // Ukrainian without native voice + online → try Google Translate TTS
+    else if(lang==='uk' && !hasNativeUkVoice() && navigator.onLine){
+      await playGoogleTranslateTTS(text,'uk',rate||speed);
+    }
+    // Default: browser speechSynthesis (works offline!)
+    else {
+      speakBrowser(text,rate,false);
     }
     stats.listened++;saveStats();updateStats();
   }catch(err){
-    try{speakBrowser(text,rate,withMainButton);}catch(e){}
+    console.warn('Speech error:',err);
     stats.listened++;saveStats();updateStats();
   }finally{
     if(btn)setTimeout(function(){btn.classList.remove('speaking')},500);
   }
 }
 
-async function speak(text,rate){return smartSpeak(text,rate,true)}
-async function speakAny(text){return smartSpeak(text,speed,false)}
+async function speak(text,rate){ return smartSpeak(text,rate,true); }
+async function speakAny(text){ return smartSpeak(text,speed,false); }
 function speakCurrent(){const it=currentList[currentIndex];if(it)speak(it.word)}
 function speakSlow(){const it=currentList[currentIndex];if(it)speak(it.word,Math.max(.3,speed-.3))}
 
@@ -1077,14 +1077,6 @@ function setConstructorMode(mode){
   document.getElementById('modeLetters').classList.toggle('active',mode==='letters');
   document.getElementById('constructorWordsSection').style.display=mode==='words'?'':'none';
   document.getElementById('constructorLettersSection').style.display=mode==='letters'?'':'none';
-  // Hide title in letters mode for more screen space
-  var hdr=document.getElementById('constrHeader');
-  if(hdr) hdr.style.display=mode==='letters'?'none':'';
-  // Scroll to show sentence + keyboard
-  if(mode==='letters'){
-    var area=document.getElementById('constructorArea');
-    if(area) area.scrollIntoView({behavior:'smooth',block:'start'});
-  }
 }
 
 // ── Letter keyboard for typing custom words ──
@@ -1595,11 +1587,12 @@ window.addEventListener('online',function(){updateVoiceHint()});
 window.addEventListener('offline',function(){updateVoiceHint()});
 
 // ══════════ SERVICE WORKER for offline ══════════
-// Only register when hosted on your own server (not in Claude preview or file://)
-if('serviceWorker' in navigator && location.protocol==='https:' && !location.hostname.includes('claudeusercontent')){
-  navigator.serviceWorker.register('service-worker.js').then(function(){
-    console.log('ГовориЗнову: офлайн режим активовано');
-  }).catch(function(){});
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('service-worker.js').then(function(reg){
+    console.log('SpeakAgain: Offline mode ready');
+  }).catch(function(err){
+    console.log('Service Worker unavailable — app works but needs internet to load:',err.message);
+  });
 }
 </script>
 </body>
