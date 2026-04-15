@@ -780,43 +780,41 @@ function speakBrowser(text,rate,withMainButton=false){
   u.lang='uk-UA';
   u.rate=rate||speed;
   u.pitch=1;
+  var allVoices=window.speechSynthesis.getVoices();
   if(selectedVoice){
     u.voice=selectedVoice;
-  } else {
-    var allVoices=window.speechSynthesis.getVoices();
-    // ONLY use Ukrainian voice — never Russian, never Polish
+  } else if(allVoices.length){
     var ukVoice=allVoices.find(function(vv){return /^uk/i.test(vv.lang)||/ukrain/i.test(vv.name)});
-    if(ukVoice) u.voice=ukVoice;
-    // If no Ukrainian voice found, don't set any voice — just use lang='uk-UA' hint
+    u.voice=ukVoice||allVoices[0]; // Ukrainian if available, otherwise any voice
   }
-  const btn=document.getElementById('speakBtn');
-  if(withMainButton&&btn)btn.classList.add('speaking');
-  u.onend=()=>{if(withMainButton&&btn)btn.classList.remove('speaking')};
-  u.onerror=(e)=>{console.warn('Speech error:',e);if(withMainButton&&btn)btn.classList.remove('speaking')};
-  setTimeout(()=>window.speechSynthesis.speak(u),50);
+  var btn2=withMainButton?document.getElementById('speakBtn'):null;
+  if(btn2)btn2.classList.add('speaking');
+  u.onend=function(){if(btn2)btn2.classList.remove('speaking')};
+  u.onerror=function(){if(btn2)btn2.classList.remove('speaking')};
+  setTimeout(function(){window.speechSynthesis.speak(u)},50);
   return true;
 }
 
-// Smart speak — OFFLINE FIRST, then try Google TTS as enhancement
+// Smart speak — browser first, Google TTS as enhancement
 async function smartSpeak(text, rate, withMainButton){
   var btn=withMainButton?document.getElementById('speakBtn'):null;
   if(btn)btn.classList.add('speaking');
   try{
-    // Custom Google Cloud endpoint (user configured)
-    if(ttsProvider==='google'){
-      await playViaGoogleCloud(text,rate);
-    }
-    // Ukrainian without native voice + online → try Google Translate TTS
-    else if(lang==='uk' && !hasNativeUkVoice() && navigator.onLine){
+    if(hasNativeUkVoice()){
+      // Best case: native Ukrainian voice installed
+      speakBrowser(text,rate,false);
+    } else if(navigator.onLine){
+      // No native voice but online — try Google Translate Ukrainian
       await playGoogleTranslateTTS(text,'uk',rate||speed);
-    }
-    // Default: browser speechSynthesis (works offline!)
-    else {
+    } else {
+      // Offline, no native voice — use whatever browser has with uk-UA lang hint
       speakBrowser(text,rate,false);
     }
     stats.listened++;saveStats();updateStats();
   }catch(err){
     console.warn('Speech error:',err);
+    // Last resort — try browser speech anyway
+    try{speakBrowser(text,rate,false);}catch(e){}
     stats.listened++;saveStats();updateStats();
   }finally{
     if(btn)setTimeout(function(){btn.classList.remove('speaking')},500);
