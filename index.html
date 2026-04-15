@@ -1,0 +1,1598 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-touch-fullscreen" content="yes">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#3B7DD8">
+<title>SpeakAgain — Speech & Brain Therapy</title>
+
+<!-- PWA Manifest -->
+<link rel="manifest" href="manifest.json">
+<!-- Apple touch icon -->
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect fill='%233B7DD8' width='180' height='180' rx='36'/%3E%3Ctext x='90' y='125' font-size='110' text-anchor='middle'%3E🗣️%3C/text%3E%3C/svg%3E">
+<style>
+/* Offline-safe fonts: load Google Fonts if online, fallback to system fonts if offline */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap');
+</style>
+<style>
+:root{--bg:#F0F4F8;--card:#FFFFFF;--pri:#3B7DD8;--pri-l:#E0ECFA;--pri-d:#2460A8;--ok:#38A169;--ok-l:#E2F5EA;--acc:#ED8936;--acc-l:#FFF3E0;--txt:#1A202C;--txt-l:#5A6577;--danger:#E53E3E;--danger-l:#FFF0F0;--sh:0 4px 20px rgba(0,0,0,.06);--sh-lg:0 8px 40px rgba(0,0,0,.10);--r:22px;--rs:16px}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Nunito',-apple-system,'Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* ── NAV — collapsible menu ── */
+.navbar{background:var(--card);box-shadow:0 2px 12px rgba(0,0,0,.06);position:sticky;top:0;z-index:100;padding:0}
+.nav-top-row{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;gap:12px}
+.logo{font-family:'Quicksand';font-weight:700;font-size:26px;color:var(--pri);display:flex;align-items:center;gap:8px}
+.logo .icon{font-size:30px}
+.menu-toggle{padding:12px 22px;border:3px solid #C9D1DC;background:#E8ECF1;border-radius:14px;font-family:'Nunito',-apple-system,sans-serif;font-weight:800;font-size:20px;cursor:pointer;transition:all .2s;box-shadow:0 3px 10px rgba(0,0,0,.1);color:var(--txt);display:flex;align-items:center;gap:8px}
+.menu-toggle:active{transform:scale(.95)}
+.menu-toggle.open{background:var(--pri-l);border-color:var(--pri);color:var(--pri-d)}
+.nav-menu{display:none;padding:8px 16px 16px;gap:8px;flex-wrap:wrap}
+.nav-menu.open{display:flex}
+.nav-pill{padding:14px 20px;border:3px solid #C9D1DC;background:#E8ECF1;font-family:'Nunito',-apple-system,sans-serif;font-weight:800;font-size:18px;color:var(--txt);border-radius:16px;cursor:pointer;transition:all .2s;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.1);display:flex;align-items:center;gap:6px;flex:1;min-width:140px;justify-content:center}
+.nav-pill:active{transform:scale(.95)}
+.nav-pill.active{background:var(--pri-l);color:var(--pri-d);border-color:var(--pri)}
+
+.container{max-width:1200px;margin:0 auto;padding:22px}
+.section-header{margin-bottom:20px}
+.section-header h2{font-family:'Quicksand';font-weight:700;font-size:30px}
+.section-header p{color:var(--txt-l);font-size:18px;margin-top:4px}
+
+.progress-strip{display:flex;align-items:center;gap:14px;background:var(--card);padding:16px 22px;border-radius:var(--r);box-shadow:var(--sh);margin-bottom:20px}
+.progress-strip .label{font-weight:700;font-size:17px;white-space:nowrap}
+.progress-bar-track{flex:1;height:14px;background:var(--bg);border-radius:10px;overflow:hidden}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--pri),var(--ok));border-radius:10px;transition:width .5s}
+.progress-strip .count{font-weight:800;font-size:18px;color:var(--pri)}
+
+.difficulty-row{display:flex;gap:10px;margin-bottom:22px}
+.diff-btn{flex:1;padding:16px;border:3px solid var(--bg);background:var(--card);border-radius:var(--rs);font-family:'Nunito';font-weight:800;font-size:18px;cursor:pointer;transition:all .2s;text-align:center;box-shadow:var(--sh)}
+.diff-btn.active-easy{border-color:var(--ok);background:var(--ok-l);color:#22543D}
+.diff-btn.active-medium{border-color:var(--acc);background:var(--acc-l);color:#975A16}
+.diff-btn.active-hard{border-color:var(--danger);background:var(--danger-l);color:#C53030}
+
+.word-card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh-lg);padding:48px 32px 32px;text-align:center;margin-bottom:22px;position:relative;overflow:hidden;animation:cardIn .35s ease}
+@keyframes cardIn{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.category-badge{display:inline-block;padding:6px 18px;border-radius:30px;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;background:var(--pri-l);color:var(--pri-d)}
+.main-word{font-family:'Quicksand';font-weight:800;font-size:clamp(40px,8vw,72px);line-height:1.15;color:var(--txt);margin-bottom:10px;word-break:break-word}
+.phonetic{font-size:22px;color:var(--txt-l);margin-bottom:24px;font-style:italic}
+.hint{font-size:18px;color:var(--txt-l);background:var(--bg);display:inline-block;padding:8px 20px;border-radius:12px}
+
+.action-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:16px}
+.big-btn{display:flex;align-items:center;justify-content:center;gap:10px;padding:22px 32px;border:none;border-radius:var(--r);font-family:'Nunito';font-weight:800;font-size:22px;cursor:pointer;transition:all .2s;min-width:160px;box-shadow:var(--sh)}
+.big-btn:active{transform:scale(.96)}
+.big-btn .btn-icon{font-size:28px}
+.btn-speak{background:linear-gradient(135deg,var(--pri),var(--pri-d));color:#fff;flex:2}
+.btn-slow{background:var(--acc-l);color:#975A16;border:2.5px solid var(--acc);flex:1}
+.btn-next{background:var(--ok);color:#fff;flex:1}
+.btn-prev{background:var(--card);color:var(--txt-l);border:2.5px solid #E2E8F0;flex:1}
+.btn-repeat{background:var(--pri-l);color:var(--pri-d);border:2.5px solid var(--pri)}
+
+.controls-row{display:flex;gap:12px;align-items:center;background:var(--card);padding:16px 22px;border-radius:var(--r);box-shadow:var(--sh);margin-bottom:20px;flex-wrap:wrap}
+.controls-row label{font-weight:700;font-size:16px;white-space:nowrap}
+.controls-row select,.controls-row input[type=range]{font-family:'Nunito';font-size:16px;padding:8px 12px;border:2px solid #E2E8F0;border-radius:12px;background:var(--bg)}
+.controls-row input[type=range]{flex:1;min-width:80px;accent-color:var(--pri);height:8px}
+.speed-val{font-weight:800;color:var(--pri);min-width:44px;text-align:center;font-size:18px}
+
+.page{display:none}.page.active{display:block}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:20px}
+.cat-card{background:var(--card);border-radius:var(--rs);padding:20px;box-shadow:var(--sh);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:14px;border:3px solid transparent}
+.cat-card:active{transform:scale(.97)}
+.cat-card.selected{border-color:var(--pri);background:var(--pri-l)}
+.cat-card .cat-icon{font-size:36px}
+.cat-card .cat-info h3{font-size:20px;font-weight:700}
+.cat-card .cat-info span{font-size:14px;color:var(--txt-l)}
+
+.fav-star{position:absolute;top:14px;right:18px;font-size:34px;cursor:pointer;opacity:.3;transition:all .2s}
+.fav-star.active{opacity:1;color:var(--acc)}
+
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:22px}
+.stat-card{background:var(--card);border-radius:var(--rs);padding:24px 20px;box-shadow:var(--sh);text-align:center}
+.stat-card .stat-icon{font-size:40px;margin-bottom:6px}
+.stat-card .stat-num{font-family:'Quicksand';font-weight:800;font-size:36px;color:var(--pri)}
+.stat-card .stat-label{font-size:16px;color:var(--txt-l);font-weight:600}
+
+/* ── PUZZLE ── */
+.puzzle-upload-area{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:40px;text-align:center;margin-bottom:20px;border:3px dashed #CBD5E0;cursor:pointer;transition:all .2s}
+.puzzle-upload-area:hover,.puzzle-upload-area.dragover{border-color:var(--pri);background:var(--pri-l)}
+.puzzle-upload-area .upload-icon{font-size:64px;margin-bottom:12px}
+.puzzle-upload-area h3{font-size:24px;font-weight:700;margin-bottom:6px}
+.puzzle-upload-area p{color:var(--txt-l);font-size:18px}
+.puzzle-controls{display:flex;gap:10px;align-items:center;justify-content:center;background:var(--card);padding:14px 20px;border-radius:var(--r);box-shadow:var(--sh);margin-bottom:20px;flex-wrap:wrap}
+.puzzle-controls label{font-weight:700;font-size:18px}
+.grid-btn{padding:12px 22px;border:2.5px solid #E2E8F0;background:var(--card);border-radius:14px;font-family:'Nunito';font-weight:800;font-size:18px;cursor:pointer;transition:all .2s}
+.grid-btn.active{border-color:var(--pri);background:var(--pri-l);color:var(--pri-d)}
+.puzzle-stats-bar{display:flex;gap:24px;align-items:center;justify-content:center;background:var(--card);padding:16px 22px;border-radius:var(--r);box-shadow:var(--sh);margin-bottom:20px}
+.puzzle-stat{text-align:center}
+.puzzle-stat .ps-val{font-family:'Quicksand';font-weight:800;font-size:28px;color:var(--pri)}
+.puzzle-stat .ps-label{font-size:14px;color:var(--txt-l);font-weight:600}
+.puzzle-wrapper{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.puzzle-board{display:grid;gap:3px;background:#EDF2F7;border-radius:var(--r);padding:6px;box-shadow:var(--sh-lg);width:min(88vw,480px);aspect-ratio:1}
+.puzzle-piece{border-radius:8px;cursor:grab;transition:transform .15s,box-shadow .15s;position:relative;overflow:hidden;aspect-ratio:1;background-size:cover;background-position:center}
+.puzzle-piece:active{cursor:grabbing;transform:scale(1.05);z-index:10;box-shadow:0 8px 30px rgba(0,0,0,.2)}
+.puzzle-piece.selected{box-shadow:0 0 0 4px var(--pri),0 4px 16px rgba(59,125,216,.3);transform:scale(1.03);z-index:5}
+.puzzle-piece.correct{box-shadow:inset 0 0 0 3px var(--ok)}
+.puzzle-preview{width:min(28vw,160px);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);flex-shrink:0}
+.puzzle-preview img{width:100%;display:block;border-radius:var(--r)}
+.puzzle-complete-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000;animation:fadeIn .3s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.puzzle-complete-card{background:var(--card);border-radius:var(--r);padding:40px;text-align:center;box-shadow:var(--sh-lg);max-width:400px;animation:bounceIn .4s}
+@keyframes bounceIn{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.puzzle-complete-card .trophy{font-size:72px;margin-bottom:12px}
+.puzzle-complete-card h2{font-family:'Quicksand';font-size:30px;margin-bottom:8px}
+.puzzle-complete-card p{color:var(--txt-l);margin-bottom:20px;font-size:18px}
+.sample-images{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin:16px 0 20px}
+.sample-img{border-radius:var(--rs);overflow:hidden;cursor:pointer;box-shadow:var(--sh);transition:all .2s;aspect-ratio:1;position:relative;border:3px solid transparent}
+.sample-img:hover{transform:scale(1.03);border-color:var(--pri)}
+.sample-img canvas{width:100%;height:100%;display:block}
+.sample-img .si-label{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.55);color:#fff;padding:6px;font-size:13px;font-weight:700;text-align:center}
+
+/* ── ALPHABET — BIG for elderly ── */
+.alpha-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:10px;margin-bottom:24px}
+.alpha-card{background:var(--card);border-radius:var(--rs);padding:16px 8px;box-shadow:var(--sh);text-align:center;cursor:pointer;transition:all .2s;border:3px solid transparent}
+.alpha-card:active{transform:scale(.92)}
+.alpha-card:hover{border-color:var(--pri);background:var(--pri-l)}
+.alpha-card .al-big{font-family:'Quicksand';font-weight:800;font-size:44px;line-height:1}
+.alpha-card .al-small{font-size:28px;color:var(--txt-l);margin-top:3px}
+.alpha-card .al-name{font-size:13px;color:var(--txt-l);margin-top:5px;font-weight:700}
+.alpha-card.playing{border-color:var(--pri);background:var(--pri-l);animation:pulse .8s}
+.alpha-toolbar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.alpha-switch{padding:14px 22px;border:3px solid #E2E8F0;background:var(--card);border-radius:16px;font-weight:800;font-size:18px;cursor:pointer;transition:all .2s}
+.alpha-switch.active{border-color:var(--pri);background:var(--pri-l);color:var(--pri-d)}
+
+/* ── SENTENCE BUILDER — BIG ── */
+.constructor-area{background:var(--card);border-radius:var(--r);box-shadow:var(--sh-lg);padding:24px;margin-bottom:22px}
+.sentence-display{min-height:90px;background:var(--bg);border-radius:var(--rs);padding:18px;margin-bottom:18px;display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+.sent-placeholder{color:var(--txt-l);font-size:20px}
+.sent-word{display:inline-flex;align-items:center;gap:8px;padding:14px 20px;background:var(--card);border:2.5px solid var(--pri);border-radius:14px;font-family:'Quicksand';font-weight:800;font-size:24px;color:var(--pri-d);box-shadow:var(--sh);animation:letterPop .25s ease;cursor:pointer;transition:all .15s}
+.sent-word:hover{border-color:var(--danger);background:var(--danger-l);color:#C53030}
+.sent-word .sw-remove{font-size:16px;opacity:.4}
+.sent-word:hover .sw-remove{opacity:1}
+@keyframes letterPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.constructor-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+
+.block-cat-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.block-cat-btn{padding:12px 22px;border:2.5px solid #C9D1DC;background:#E8ECF1;border-radius:30px;font-family:'Nunito';font-weight:800;font-size:17px;cursor:pointer;transition:all .2s;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.1);color:var(--txt)}
+.block-cat-btn.active{border-color:var(--pri);background:var(--pri-l);color:var(--pri-d)}
+
+.word-blocks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:22px}
+.word-block{background:#E8ECF1;border:2.5px solid #C9D1DC;border-radius:16px;padding:18px 14px;box-shadow:0 3px 10px rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;text-align:center}
+.word-block:active{transform:scale(.94);border-color:var(--pri);background:var(--pri-l)}
+.word-block:hover{border-color:var(--pri);background:#D6DCE6}
+.wb-word{font-family:'Quicksand';font-weight:800;font-size:20px;line-height:1.2;word-break:break-word;color:var(--txt)}
+
+/* Letter keyboard in constructor — clean, tap to add */
+.constr-letter-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:8px;margin-bottom:24px}
+.constr-letter{background:#E8ECF1;border:3px solid #C9D1DC;border-radius:16px;padding:16px 8px;text-align:center;cursor:pointer;transition:all .2s;box-shadow:0 3px 10px rgba(0,0,0,.1);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:72px}
+.constr-letter:active{transform:scale(.9);background:var(--pri-l);border-color:var(--pri)}
+.constr-letter:hover{border-color:var(--pri);background:#D6DCE6}
+.constr-letter .cl-char{font-family:'Quicksand';font-weight:800;font-size:38px;line-height:1;color:var(--txt)}
+.constr-letter .cl-label{font-size:13px;font-weight:800;margin-top:4px}
+.constr-letter.constr-special{min-height:72px;background:var(--card);border-color:#C9D1DC}
+.constr-letter.constr-space{grid-column:span 3;min-height:64px;font-size:22px}
+
+/* Mode toggle in constructor */
+.mode-toggle{display:flex;gap:8px;margin-bottom:20px}
+.mode-btn{flex:1;padding:22px;border:3px solid #C9D1DC;background:#E8ECF1;border-radius:var(--rs);font-family:'Nunito';font-weight:800;font-size:24px;cursor:pointer;transition:all .2s;text-align:center;box-shadow:0 3px 10px rgba(0,0,0,.1);color:var(--txt)}
+.mode-btn.active{border-color:var(--pri);background:var(--pri-l);color:var(--pri-d)}
+
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(59,125,216,.4)}70%{box-shadow:0 0 0 18px rgba(59,125,216,0)}100%{box-shadow:0 0 0 0 rgba(59,125,216,0)}}
+.speaking{animation:pulse 1s infinite}
+@keyframes flash-success{0%{background:var(--card)}30%{background:var(--ok-l)}100%{background:var(--card)}}
+.flash{animation:flash-success .6s ease}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+.voice-provider-note{font-size:14px;color:var(--txt-l);font-weight:700;margin-left:auto}
+.puzzle-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin:0 0 18px}
+.gallery-item{position:relative;border-radius:var(--rs);overflow:hidden;box-shadow:var(--sh);background:var(--card);border:3px solid transparent;cursor:pointer;aspect-ratio:1}
+.gallery-item:hover{border-color:var(--pri)}
+.gallery-item img{width:100%;height:100%;object-fit:cover;display:block}
+.gallery-item .si-label{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.55);color:#fff;padding:6px;font-size:13px;font-weight:700;text-align:center}
+.gallery-remove{position:absolute;top:6px;right:6px;width:30px;height:30px;border:none;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;font-weight:800;font-size:16px;cursor:pointer}
+
+#page-constructor{padding-bottom:28px}
+#alphaGrid{min-height:240px}
+
+/* ── MOUTH EXERCISES ── */
+.mouth-card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:24px;margin-bottom:16px;display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.mouth-card .mc-icon{font-size:56px;flex-shrink:0}
+.mouth-card .mc-info{flex:1;min-width:200px}
+.mouth-card .mc-title{font-family:'Quicksand',-apple-system,sans-serif;font-weight:800;font-size:22px;margin-bottom:6px}
+.mouth-card .mc-desc{font-size:16px;color:var(--txt-l);line-height:1.5}
+.mouth-card .mc-reps{font-size:14px;font-weight:800;color:var(--pri);margin-top:8px}
+.mouth-card .mc-done{padding:14px 24px;border:3px solid #E2E8F0;background:#E8ECF1;border-radius:14px;font-weight:800;font-size:18px;cursor:pointer;transition:all .2s}
+.mouth-card .mc-done.completed{background:var(--ok-l);border-color:var(--ok);color:#22543D}
+
+/* ── BREATHING ── */
+.breath-exercise{display:flex;flex-direction:column;align-items:center;padding:20px}
+.breath-circle{width:220px;height:220px;border-radius:50%;background:var(--pri-l);border:4px solid var(--pri);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 1s ease;margin:0 auto}
+.breath-circle.inhale{transform:scale(1.3);background:#D4EDDA;border-color:var(--ok)}
+.breath-circle.exhale{transform:scale(0.8);background:#FDE8E8;border-color:var(--danger)}
+.breath-circle.hold{transform:scale(1.15);background:#FFF3CD;border-color:var(--acc)}
+.breath-text{font-family:'Quicksand',-apple-system,sans-serif;font-weight:800;font-size:24px;text-align:center}
+.breath-timer{font-size:48px;font-weight:800;color:var(--pri);margin-top:4px}
+.breath-tip{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:20px;margin-bottom:12px}
+.breath-tip h4{font-size:20px;margin-bottom:6px}
+.breath-tip p{font-size:16px;color:var(--txt-l);line-height:1.5}
+
+/* ── JOURNAL ── */
+.journal-today{background:var(--card);border-radius:var(--r);box-shadow:var(--sh-lg);padding:24px;margin-bottom:20px}
+.journal-mood{margin-bottom:16px}
+.mood-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.mood-btn{padding:14px 18px;border:3px solid #E2E8F0;background:var(--card);border-radius:16px;font-size:28px;cursor:pointer;transition:all .2s;text-align:center;min-width:80px}
+.mood-btn:active{transform:scale(.9)}
+.mood-btn.selected{border-color:var(--pri);background:var(--pri-l)}
+.journal-textarea{width:100%;padding:16px;border:3px solid #E2E8F0;border-radius:16px;font-family:'Nunito',-apple-system,sans-serif;font-size:18px;resize:vertical;background:var(--bg);outline:none;margin-bottom:16px;min-height:120px}
+.journal-textarea:focus{border-color:var(--pri)}
+.journal-entry{background:var(--card);border-radius:var(--rs);box-shadow:var(--sh);padding:18px;margin-bottom:12px}
+.journal-entry .je-date{font-weight:800;color:var(--pri);font-size:14px}
+.journal-entry .je-mood{font-size:24px;float:right}
+.journal-entry .je-text{font-size:16px;margin-top:8px;line-height:1.5;color:var(--txt)}
+
+/* ── MEMORY GAME ── */
+.memory-controls{display:flex;gap:10px;align-items:center;background:var(--card);padding:16px 22px;border-radius:var(--r);box-shadow:var(--sh);margin-bottom:18px;flex-wrap:wrap}
+.memory-controls label{font-weight:800;font-size:18px}
+.memory-stats{display:flex;gap:24px;align-items:center;justify-content:center;background:var(--card);padding:16px 22px;border-radius:var(--r);box-shadow:var(--sh);margin-bottom:18px}
+.memory-board{display:grid;gap:10px;justify-content:center;margin-bottom:24px}
+.mem-card{background:var(--pri);border-radius:var(--rs);aspect-ratio:1;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Quicksand';font-weight:800;font-size:22px;color:#fff;box-shadow:var(--sh);transition:all .3s;position:relative;overflow:hidden;min-height:80px;border:3px solid var(--pri-d);user-select:none}
+.mem-card.flipped{background:var(--card);color:var(--txt);border-color:#E2E8F0}
+.mem-card.matched{background:var(--ok-l);color:#22543D;border-color:var(--ok);cursor:default}
+.mem-card .mem-face{display:none;text-align:center;padding:6px;word-break:break-word;line-height:1.2}
+.mem-card.flipped .mem-face,.mem-card.matched .mem-face{display:flex;flex-direction:column;align-items:center;gap:2px}
+.mem-card .mem-back{font-size:36px}
+.mem-card.flipped .mem-back,.mem-card.matched .mem-back{display:none}
+.mem-card .mem-emoji{font-size:28px}
+.mem-card .mem-text{font-size:18px;font-weight:800}
+@keyframes memFlip{0%{transform:scaleX(1)}50%{transform:scaleX(0)}100%{transform:scaleX(1)}}
+.mem-card.flipping{animation:memFlip .4s ease}
+
+/* ── CROSSWORD / WORD FILL ── */
+.cross-controls{display:flex;gap:10px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
+.cross-word-card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh-lg);padding:28px 24px;margin-bottom:16px;text-align:center}
+.cross-hint{font-size:48px;margin-bottom:12px}
+.cross-hint-text{font-size:20px;color:var(--txt-l);margin-bottom:20px;font-weight:600}
+.cross-letters{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.cross-cell{width:56px;height:66px;border:3px solid #E2E8F0;border-radius:14px;font-family:'Quicksand';font-weight:800;font-size:34px;text-align:center;text-transform:lowercase;background:var(--bg);outline:none;transition:all .2s;color:var(--txt)}
+.cross-cell:focus{border-color:var(--pri);background:var(--card);box-shadow:0 0 0 3px rgba(59,125,216,.2)}
+.cross-cell.given{background:var(--pri-l);border-color:var(--pri);color:var(--pri-d)}
+.cross-cell.correct{background:var(--ok-l);border-color:var(--ok);color:#22543D}
+.cross-cell.wrong{background:var(--danger-l);border-color:var(--danger);color:#C53030}
+.cross-word-label{font-family:'Quicksand';font-weight:800;font-size:16px;color:var(--txt-l);margin-bottom:8px}
+.cross-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.cross-score{display:flex;gap:24px;justify-content:center;background:var(--card);padding:16px;border-radius:var(--r);box-shadow:var(--sh);margin-bottom:18px}
+.cross-progress{font-weight:800;font-size:18px;color:var(--pri)}
+
+/* Crossword on-screen keyboard */
+.cross-keyboard{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:6px;margin-bottom:24px}
+.cross-kb-key{background:#E8ECF1;border:2.5px solid #C9D1DC;border-radius:14px;padding:14px 6px;text-align:center;cursor:pointer;font-family:'Quicksand';font-weight:800;font-size:28px;box-shadow:0 3px 10px rgba(0,0,0,.1);transition:all .15s;user-select:none;color:var(--txt)}
+.cross-kb-key:active{transform:scale(.9);background:var(--pri-l);border-color:var(--pri)}
+.cross-kb-key:hover{border-color:var(--pri);background:#D6DCE6}
+.cross-kb-key.cross-kb-del{background:#FDE8E8;border-color:var(--danger);color:var(--danger)}
+@media(max-width:600px){.container{padding:14px}.word-card{padding:28px 16px 24px}.big-btn{padding:18px 18px;font-size:18px;min-width:120px}.puzzle-wrapper{flex-direction:column;align-items:center}.puzzle-preview{width:min(50vw,150px)}.alpha-grid{grid-template-columns:repeat(auto-fill,minmax(70px,1fr))}.constr-letter-grid{grid-template-columns:repeat(auto-fill,minmax(72px,1fr))}.word-blocks-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}.voice-provider-note{width:100%;margin-left:0}.nav-pill{font-size:16px;padding:12px 16px;min-width:auto}.mode-btn{font-size:17px;padding:14px}}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-top-row">
+    <div class="logo"><span class="icon">🗣️</span> ГовориЗнову</div>
+    <button class="menu-toggle" id="menuToggle" onclick="toggleMenu()">☰ Меню</button>
+  </div>
+  <div class="nav-menu" id="navMenu">
+    <button class="nav-pill active" onclick="showPage('practice')">🎯 Практика</button>
+    <button class="nav-pill" onclick="showPage('mouth')">👅 Вправи для рота</button>
+    <button class="nav-pill" onclick="showPage('breathing')">🌬️ Дихання</button>
+    <button class="nav-pill" onclick="showPage('alphabet')">🔤 Абетка</button>
+    <button class="nav-pill" onclick="showPage('constructor')">🧱 Конструктор</button>
+    <button class="nav-pill" onclick="showPage('categories')">📂 Категорії</button>
+    <button class="nav-pill" onclick="showPage('puzzle')">🧩 Пазл</button>
+    <button class="nav-pill" onclick="showPage('memory')">🃏 Пам'ять</button>
+    <button class="nav-pill" onclick="showPage('crossword')">✏️ Заповни</button>
+    <button class="nav-pill" onclick="showPage('journal')">📓 Щоденник</button>
+    <button class="nav-pill" onclick="showPage('favorites')">⭐ Обране</button>
+    <button class="nav-pill" onclick="showPage('stats')">📊 Прогрес</button>
+  </div>
+</nav>
+
+<div class="container">
+
+<!-- ═══ PRACTICE ═══ -->
+<div id="page-practice" class="page active">
+  <div class="section-header"><h2 data-i18n="practice_title">Practice Speaking</h2><p data-i18n="practice_sub">Tap the speaker button to hear the word, then repeat it</p></div>
+  <div class="progress-strip"><span class="label" data-i18n="session">Session</span><div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div><span class="count" id="progressCount">0/0</span></div>
+  <div class="difficulty-row">
+    <button class="diff-btn active-easy" id="diff-easy" onclick="setDifficulty('easy')">😊 <span data-i18n="diff_easy">Easy</span><br><small data-i18n="diff_easy_sub">Words</small></button>
+    <button class="diff-btn" id="diff-medium" onclick="setDifficulty('medium')">💪 <span data-i18n="diff_medium">Medium</span><br><small data-i18n="diff_medium_sub">Phrases</small></button>
+    <button class="diff-btn" id="diff-hard" onclick="setDifficulty('hard')">🌟 <span data-i18n="diff_hard">Hard</span><br><small data-i18n="diff_hard_sub">Sentences</small></button>
+  </div>
+  <div class="word-card" id="wordCard">
+    <span class="fav-star" id="favStar" onclick="toggleFavorite()">⭐</span>
+    <div class="category-badge" id="catBadge"></div>
+    <div class="main-word" id="mainWord"></div>
+    <div class="phonetic" id="phonetic"></div>
+    <div class="hint" id="hint"></div>
+  </div>
+  <div class="action-row">
+    <button class="big-btn btn-speak" id="speakBtn" onclick="speakCurrent()"><span class="btn-icon">🔊</span> <span data-i18n="btn_listen">Listen</span></button>
+    <button class="big-btn btn-slow" onclick="speakSlow()"><span class="btn-icon">🐢</span> <span data-i18n="btn_slow">Slow</span></button>
+  </div>
+  <div class="action-row">
+    <button class="big-btn btn-prev" onclick="prevWord()"><span class="btn-icon">◀️</span> <span data-i18n="btn_back">Back</span></button>
+    <button class="big-btn btn-repeat" onclick="speakCurrent()"><span class="btn-icon">🔁</span> <span data-i18n="btn_repeat">Repeat</span></button>
+    <button class="big-btn btn-next" onclick="nextWord()"><span data-i18n="btn_next">Next</span> <span class="btn-icon">▶️</span></button>
+  </div>
+  <div class="controls-row">
+    <label>🗣️ Provider:</label><select id="ttsProviderSelect" onchange="setTtsProvider(this.value)"><option value="browser">Browser</option><option value="google">Google Cloud</option></select>
+    <label>🎙️ <span data-i18n="voice">Voice</span>:</label><select id="voiceSelect" onchange="updateVoice()"></select>
+    <label>⏱️ <span data-i18n="speed">Speed</span>:</label><input type="range" id="speedRange" min="0.3" max="1.2" step="0.1" value="0.8" oninput="updateSpeed()"><span class="speed-val" id="speedVal">0.8×</span>
+    <span class="voice-provider-note" id="ttsNote">Browser speech is active</span>
+  </div>
+</div>
+
+<!-- ═══ MOUTH EXERCISES ═══ -->
+<div id="page-mouth" class="page">
+  <div class="section-header"><h2>👅 Вправи для рота та язика</h2><p>Зміцнюйте м'язи рота для кращого мовлення. Робіть кожну вправу 5-10 разів.</p></div>
+  <div id="mouthExercises"></div>
+</div>
+
+<!-- ═══ BREATHING ═══ -->
+<div id="page-breathing" class="page">
+  <div class="section-header"><h2>🌬️ Дихальні вправи</h2><p>Правильне дихання — основа мовлення. Виконуйте вправи повільно.</p></div>
+  <div class="breath-exercise" id="breathExercise">
+    <div class="breath-circle" id="breathCircle">
+      <div class="breath-text" id="breathText">Натисніть "Старт"</div>
+      <div class="breath-timer" id="breathTimer"></div>
+    </div>
+    <div class="action-row" style="margin-top:20px">
+      <button class="big-btn btn-speak" onclick="startBreathExercise('calm')"><span class="btn-icon">🧘</span> Спокійне дихання</button>
+      <button class="big-btn btn-next" onclick="startBreathExercise('deep')"><span class="btn-icon">💨</span> Глибоке дихання</button>
+    </div>
+    <div class="action-row">
+      <button class="big-btn btn-prev" onclick="stopBreathExercise()"><span class="btn-icon">⏹️</span> Зупинити</button>
+    </div>
+  </div>
+  <div class="section-header" style="margin-top:24px"><h3 style="font-size:22px">📋 Додаткові вправи</h3></div>
+  <div id="breathingTips"></div>
+</div>
+
+<!-- ═══ JOURNAL ═══ -->
+<div id="page-journal" class="page">
+  <div class="section-header"><h2>📓 Щоденник відновлення</h2><p>Записуйте свої думки, почуття та прогрес кожного дня.</p></div>
+  <div class="journal-today">
+    <h3 style="font-size:20px;margin-bottom:12px">📅 Сьогоднішній запис</h3>
+    <div class="journal-mood">
+      <span style="font-weight:700;font-size:16px">Як ви себе почуваєте?</span>
+      <div class="mood-row" id="moodRow">
+        <button class="mood-btn" onclick="setMood('😊')">😊<br><small>Добре</small></button>
+        <button class="mood-btn" onclick="setMood('😐')">😐<br><small>Нормально</small></button>
+        <button class="mood-btn" onclick="setMood('😢')">😢<br><small>Сумно</small></button>
+        <button class="mood-btn" onclick="setMood('💪')">💪<br><small>Сильний</small></button>
+        <button class="mood-btn" onclick="setMood('😴')">😴<br><small>Втомлений</small></button>
+      </div>
+    </div>
+    <textarea class="journal-textarea" id="journalText" placeholder="Що ви робили сьогодні? Як пройшли вправи? Запишіть тут..." rows="5"></textarea>
+    <div class="action-row">
+      <button class="big-btn btn-speak" onclick="speakJournal()"><span class="btn-icon">🔊</span> Прослухати</button>
+      <button class="big-btn btn-next" onclick="saveJournal()"><span class="btn-icon">💾</span> Зберегти</button>
+    </div>
+  </div>
+  <div class="section-header" style="margin-top:20px"><h3 style="font-size:20px">📖 Попередні записи</h3></div>
+  <div id="journalHistory"></div>
+</div>
+
+<!-- ═══ ALPHABET ═══ -->
+<div id="page-alphabet" class="page">
+  <div class="section-header"><h2 data-i18n="alpha_title">🔤 Ukrainian Alphabet</h2><p data-i18n="alpha_sub">Tap any letter to hear its pronunciation</p></div>
+  <div class="alpha-toolbar">
+    <button class="alpha-switch active" id="alphaLangBtn-en" onclick="setAlphabetMode('en')">English ABC</button>
+    <button class="alpha-switch" id="alphaLangBtn-uk" onclick="setAlphabetMode('uk')">Українська абетка</button>
+  </div>
+  <div class="alpha-grid" id="alphaGrid"></div>
+</div>
+
+<!-- ═══ CONSTRUCTOR ═══ -->
+<div id="page-constructor" class="page">
+  <div class="section-header"><h2 data-i18n="constr_title">🧱 Sentence Builder</h2><p data-i18n="constr_sub">Tap word blocks to build sentences — or use letters to create your own words!</p></div>
+
+  <!-- Built sentence area -->
+  <div class="constructor-area">
+    <div class="sentence-display" id="sentenceDisplay"><span class="sent-placeholder" data-i18n="constr_placeholder">Tap word blocks or letters below...</span></div>
+    <div class="constructor-actions">
+      <button class="big-btn btn-speak" onclick="speakSentence()" style="flex:2"><span class="btn-icon">🔊</span> <span data-i18n="btn_listen">Listen</span></button>
+      <button class="big-btn btn-prev" onclick="undoSentence()"><span class="btn-icon">⌫</span> <span data-i18n="constr_delete">Undo</span></button>
+      <button class="big-btn btn-next" onclick="clearSentence()"><span class="btn-icon">🗑️</span> <span data-i18n="constr_clear">Clear</span></button>
+    </div>
+  </div>
+
+  <!-- Mode toggle -->
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="modeWords" onclick="setConstructorMode('words')">📦 <span data-i18n="constr_mode_words">Word Blocks</span></button>
+    <button class="mode-btn" id="modeLetters" onclick="setConstructorMode('letters')">🔤 <span data-i18n="constr_mode_letters">Letters</span></button>
+  </div>
+
+  <!-- Word blocks section -->
+  <div id="constructorWordsSection">
+    <div class="block-cat-bar" id="blockCatBar"></div>
+    <div class="word-blocks-grid" id="wordBlocksGrid"></div>
+  </div>
+
+  <!-- Letter keyboard section (hidden by default) -->
+  <div id="constructorLettersSection" style="display:none">
+    <div class="section-header"><p data-i18n="constr_letters_hint">Tap + to add a letter to your sentence. Tap 🔊 to hear it. Build any word you want!</p></div>
+    <div class="constr-letter-grid" id="constrLetterGrid"></div>
+  </div>
+</div>
+
+<!-- ═══ CATEGORIES ═══ -->
+<div id="page-categories" class="page">
+  <div class="section-header"><h2 data-i18n="cat_title">Categories</h2><p data-i18n="cat_sub">Choose a category to focus your practice</p></div>
+  <div class="cat-grid" id="catGrid"></div>
+</div>
+
+<!-- ═══ PUZZLE ═══ -->
+<div id="page-puzzle" class="page">
+  <div class="section-header"><h2 data-i18n="puzzle_title">🧩 Photo Puzzle</h2><p data-i18n="puzzle_sub">Upload a photo or pick one below</p></div>
+  <div id="puzzleUploadArea" class="puzzle-upload-area" onclick="document.getElementById('puzzleFileInput').click()">
+    <div class="upload-icon">📷</div><h3 data-i18n="puzzle_upload_title">Tap to Upload Photo</h3><p data-i18n="puzzle_upload_sub">or drag and drop</p>
+    <input type="file" id="puzzleFileInput" accept="image/*" style="display:none" onchange="handlePuzzleFile(event)">
+  </div>
+  <div class="section-header" style="margin-bottom:8px"><h3 style="font-family:'Quicksand';font-size:20px;margin-bottom:4px">My pictures</h3><p style="color:var(--txt-l);font-size:14px">Uploaded images stay here for later puzzles.</p></div>
+  <div class="puzzle-gallery" id="puzzleGallery"></div>
+  <div id="puzzleOrLabel" style="text-align:center;margin-bottom:10px;font-weight:700;color:var(--txt-l)" data-i18n="puzzle_or">— or choose a sample —</div>
+  <div class="sample-images" id="sampleImages"></div>
+  <div id="puzzleGameArea" style="display:none">
+    <div class="puzzle-controls">
+      <label data-i18n="puzzle_grid">Grid:</label>
+      <button class="grid-btn active" data-g="3" onclick="setPuzzleGrid(3)">3×3</button>
+      <button class="grid-btn" data-g="4" onclick="setPuzzleGrid(4)">4×4</button>
+      <button class="grid-btn" data-g="5" onclick="setPuzzleGrid(5)">5×5</button>
+      <div style="flex:1"></div>
+      <button class="big-btn btn-speak" style="min-width:auto;padding:10px 16px;font-size:13px" onclick="shufflePuzzle()">🔀 <span data-i18n="puzzle_shuffle">Shuffle</span></button>
+      <button class="big-btn btn-prev" style="min-width:auto;padding:10px 16px;font-size:13px" onclick="resetPuzzleUpload()">📷 <span data-i18n="puzzle_new">New</span></button>
+    </div>
+    <div class="puzzle-stats-bar">
+      <div class="puzzle-stat"><div class="ps-val" id="puzzleMoves">0</div><div class="ps-label" data-i18n="puzzle_moves">Moves</div></div>
+      <div class="puzzle-stat"><div class="ps-val" id="puzzleTimer">0:00</div><div class="ps-label" data-i18n="puzzle_time">Time</div></div>
+      <div class="puzzle-stat"><div class="ps-val" id="puzzleCorrect">0</div><div class="ps-label" data-i18n="puzzle_placed">Placed</div></div>
+    </div>
+    <div class="puzzle-wrapper"><div class="puzzle-board" id="puzzleBoard"></div><div class="puzzle-preview"><img id="puzzlePreviewImg" src="" alt="Preview"></div></div>
+  </div>
+</div>
+
+<!-- ═══ FAVORITES ═══ -->
+<div id="page-favorites" class="page">
+  <div class="section-header"><h2 data-i18n="fav_title">⭐ Favorites</h2><p data-i18n="fav_sub">Saved words for extra practice</p></div>
+  <div id="favList"></div>
+</div>
+
+<!-- ═══ STATS ═══ -->
+<!-- ═══ MEMORY GAME ═══ -->
+<div id="page-memory" class="page">
+  <div class="section-header"><h2 data-i18n="mem_title">🃏 Memory Game</h2><p data-i18n="mem_sub">Find matching word pairs! Tap cards to flip them.</p></div>
+  <div class="memory-controls">
+    <label data-i18n="mem_size">Grid:</label>
+    <button class="grid-btn active" data-mg="4" onclick="setMemoryGrid(4)">4×3</button>
+    <button class="grid-btn" data-mg="6" onclick="setMemoryGrid(6)">6×4</button>
+    <div style="flex:1"></div>
+    <button class="big-btn btn-speak" style="min-width:auto;padding:12px 20px;font-size:16px" onclick="initMemoryGame()">🔄 <span data-i18n="mem_new">New Game</span></button>
+  </div>
+  <div class="memory-stats">
+    <div class="puzzle-stat"><div class="ps-val" id="memMoves">0</div><div class="ps-label" data-i18n="puzzle_moves">Moves</div></div>
+    <div class="puzzle-stat"><div class="ps-val" id="memPairs">0</div><div class="ps-label" data-i18n="mem_found">Found</div></div>
+    <div class="puzzle-stat"><div class="ps-val" id="memTimer">0:00</div><div class="ps-label" data-i18n="puzzle_time">Time</div></div>
+  </div>
+  <div class="memory-board" id="memoryBoard"></div>
+</div>
+
+<!-- ═══ CROSSWORD ═══ -->
+<div id="page-crossword" class="page">
+  <div class="section-header"><h2 data-i18n="cross_title">✏️ Word Fill</h2><p data-i18n="cross_sub">Look at the hint and fill in the missing letters!</p></div>
+  <div class="cross-controls">
+    <button class="big-btn btn-speak" style="min-width:auto;padding:12px 20px;font-size:16px" onclick="initCrossword()">🔄 <span data-i18n="mem_new">New Game</span></button>
+    <button class="big-btn btn-prev" style="min-width:auto;padding:12px 20px;font-size:16px" onclick="crosswordHint()">💡 <span data-i18n="cross_hint_btn">Hint</span></button>
+  </div>
+  <div id="crosswordArea"></div>
+</div>
+
+<div id="page-stats" class="page">
+  <div class="section-header"><h2 data-i18n="stats_title">Your Progress</h2><p data-i18n="stats_sub">Every session matters!</p></div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-icon">🎯</div><div class="stat-num" id="statPracticed">0</div><div class="stat-label" data-i18n="stat_words">Words Practiced</div></div>
+    <div class="stat-card"><div class="stat-icon">🔊</div><div class="stat-num" id="statListened">0</div><div class="stat-label" data-i18n="stat_listened">Listened</div></div>
+    <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-num" id="statSessions">0</div><div class="stat-label" data-i18n="stat_sessions">Sessions</div></div>
+    <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-num" id="statFavs">0</div><div class="stat-label" data-i18n="stat_favs">Favorites</div></div>
+    <div class="stat-card"><div class="stat-icon">🧩</div><div class="stat-num" id="statPuzzles">0</div><div class="stat-label" data-i18n="stat_puzzles">Puzzles</div></div>
+    <div class="stat-card"><div class="stat-icon">🧱</div><div class="stat-num" id="statBuilt">0</div><div class="stat-label" data-i18n="stat_built">Words Built</div></div>
+  </div>
+</div>
+
+</div>
+
+<!-- Puzzle overlay -->
+<div id="puzzleCompleteOverlay" class="puzzle-complete-overlay" style="display:none" onclick="this.style.display='none'">
+  <div class="puzzle-complete-card" onclick="event.stopPropagation()">
+    <div class="trophy">🏆</div><h2 data-i18n="puzzle_done_title">Puzzle Complete!</h2><p id="puzzleCompleteMsg"></p>
+    <div class="action-row">
+      <button class="big-btn btn-speak" onclick="shufflePuzzle();document.getElementById('puzzleCompleteOverlay').style.display='none'">🔀 <span data-i18n="puzzle_play_again">Again</span></button>
+      <button class="big-btn btn-next" onclick="resetPuzzleUpload();document.getElementById('puzzleCompleteOverlay').style.display='none'">📷 <span data-i18n="puzzle_new_photo">New</span></button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════ i18n ══════════
+const I18N={en:{nav_practice:"Practice",nav_alphabet:"Alphabet",nav_constructor:"Constructor",nav_categories:"Categories",nav_puzzle:"Puzzle",nav_favorites:"Favorites",nav_stats:"Progress",practice_title:"Practice Speaking",practice_sub:"Tap the speaker button to hear the word, then repeat it",session:"Session",diff_easy:"Easy",diff_easy_sub:"Words",diff_medium:"Medium",diff_medium_sub:"Phrases",diff_hard:"Hard",diff_hard_sub:"Sentences",btn_listen:"Listen",btn_slow:"Slow",btn_back:"Back",btn_repeat:"Repeat",btn_next:"Next",voice:"Voice",speed:"Speed",cat_title:"Categories",cat_sub:"Choose a category to focus",cat_all:"All Words",cat_all_sub:"Every category",fav_title:"⭐ Favorites",fav_sub:"Saved words for extra practice",fav_empty:"No favorites yet.\nTap ⭐ on any word to save it.",stats_title:"Your Progress",stats_sub:"Every session matters!",stat_words:"Words Practiced",stat_listened:"Listened",stat_sessions:"Sessions",stat_favs:"Favorites",stat_puzzles:"Puzzles",stat_built:"Words Built",start_practice:"Start",puzzle_title:"🧩 Photo Puzzle",puzzle_sub:"Upload a photo or pick one below",puzzle_upload_title:"Tap to Upload Photo",puzzle_upload_sub:"or drag and drop",puzzle_or:"— or choose a sample —",puzzle_grid:"Grid:",puzzle_shuffle:"Shuffle",puzzle_new:"New",puzzle_moves:"Moves",puzzle_time:"Time",puzzle_placed:"Placed",puzzle_done_title:"Puzzle Complete!",puzzle_done_msg:"Solved in {moves} moves and {time}!",puzzle_play_again:"Again",puzzle_new_photo:"New",sample_sun:"Sunset",sample_mtn:"Mountains",sample_sea:"Ocean",sample_flower:"Flowers",sample_forest:"Forest",sample_sky:"Sky",no_words:"No words",try_other:"Try another category",alpha_title:"🔤 Ukrainian Alphabet",alpha_sub:"Tap any letter to hear its pronunciation",constr_title:"🧱 Sentence Builder",constr_sub:"Tap word blocks or use letters to build sentences!",constr_placeholder:"Tap word blocks or letters below...",constr_mode_words:"Word Blocks",constr_mode_letters:"Letters",constr_letters_hint:"Tap + to add a letter. Build any word you want, then tap ✓ Add to finish it.",constr_delete:"Undo",constr_clear:"Clear",constr_blocks_title:"Word Blocks",constr_blocks_sub:"Tap a block to add it to your sentence. Tap 🔊 to hear it.",search_ph:"Search words...",constr_word_added:"Word spoken!",constr_examples_title:"Sample words",constr_examples_sub:"Tap a block to load the word or use the listen button to hear it.",constr_letters_title:"Letter blocks",constr_letters_sub:"Each block can be added to the word and listened to.",constr_add:"Add",constr_breaks:"Breaks",tts_browser:"Browser speech is active",tts_google_ready:"Google Cloud mode is ready — add your backend endpoint in settings.",nav_memory:"Memory",nav_crossword:"Word Fill",nav_menu:"Menu",mem_title:"🃏 Memory Game",mem_sub:"Find matching word pairs! Tap cards to flip them.",mem_size:"Grid:",mem_new:"New Game",mem_found:"Found",cross_title:"✏️ Word Fill",cross_sub:"Look at the hint and fill in the missing letters!",cross_hint_btn:"Hint",cross_check:"Check",cross_next:"Next Word",cross_correct:"Correct!",cross_wrong:"Try again!"},uk:{nav_practice:"Практика",nav_alphabet:"Абетка",nav_constructor:"Конструктор",nav_categories:"Категорії",nav_puzzle:"Пазл",nav_favorites:"Обране",nav_stats:"Прогрес",practice_title:"Практика Мовлення",practice_sub:"Натисніть кнопку, щоб почути слово, потім повторіть",session:"Сесія",diff_easy:"Легко",diff_easy_sub:"Слова",diff_medium:"Середнє",diff_medium_sub:"Фрази",diff_hard:"Складно",diff_hard_sub:"Речення",btn_listen:"Слухати",btn_slow:"Повільно",btn_back:"Назад",btn_repeat:"Повторити",btn_next:"Далі",voice:"Голос",speed:"Швидкість",cat_title:"Категорії",cat_sub:"Оберіть категорію для практики",cat_all:"Всі слова",cat_all_sub:"Кожна категорія",fav_title:"⭐ Обране",fav_sub:"Збережені слова для практики",fav_empty:"Обраного поки немає.\nНатисніть ⭐ щоб зберегти.",stats_title:"Ваш прогрес",stats_sub:"Кожне заняття важливе!",stat_words:"Відпрацьовано",stat_listened:"Прослухано",stat_sessions:"Сесій",stat_favs:"Обраних",stat_puzzles:"Пазлів",stat_built:"Слів зібрано",start_practice:"Почати",puzzle_title:"🧩 Фото Пазл",puzzle_sub:"Завантажте фото або оберіть нижче",puzzle_upload_title:"Натисніть для завантаження",puzzle_upload_sub:"або перетягніть сюди",puzzle_or:"— або оберіть зразок —",puzzle_grid:"Сітка:",puzzle_shuffle:"Перемішати",puzzle_new:"Нове",puzzle_moves:"Ходи",puzzle_time:"Час",puzzle_placed:"На місці",puzzle_done_title:"Пазл зібрано!",puzzle_done_msg:"Зібрано за {moves} ходів та {time}!",puzzle_play_again:"Знову",puzzle_new_photo:"Нове",sample_sun:"Захід",sample_mtn:"Гори",sample_sea:"Океан",sample_flower:"Квіти",sample_forest:"Ліс",sample_sky:"Небо",no_words:"Немає слів",try_other:"Спробуйте іншу категорію",alpha_title:"🔤 Українська Абетка",alpha_sub:"Натисніть на літеру, щоб почути вимову",constr_title:"🧱 Конструктор Речень",constr_sub:"Використовуйте блоки слів або літери для побудови речень!",constr_placeholder:"Натискайте блоки слів або літери нижче...",constr_mode_words:"Блоки слів",constr_mode_letters:"Літери",constr_letters_hint:"Натисніть + щоб додати літеру. Створіть будь-яке слово, потім натисніть ✓ Додати.",constr_delete:"Назад",constr_clear:"Очистити",constr_blocks_title:"Блоки слів",constr_blocks_sub:"Натисніть блок, щоб додати до речення. 🔊 щоб прослухати.",search_ph:"Пошук слів...",constr_word_added:"Слово озвучено!",constr_examples_title:"Приклади слів",constr_examples_sub:"Натисніть на блок, щоб завантажити слово, або кнопку слухати, щоб його почути.",constr_letters_title:"Блоки літер",constr_letters_sub:"Кожен блок можна додати до слова і прослухати.",constr_add:"Додати",constr_breaks:"Склади",tts_browser:"Активне озвучення браузера",tts_google_ready:"Режим Google Cloud готовий — додайте адресу вашого backend endpoint у налаштуваннях.",nav_memory:"Пам'ять",nav_crossword:"Заповни",nav_menu:"Меню",mem_title:"🃏 Гра на Пам'ять",mem_sub:"Знайдіть пари слів! Натискайте картки.",mem_size:"Сітка:",mem_new:"Нова гра",mem_found:"Знайдено",cross_title:"✏️ Заповни Слово",cross_sub:"Подивіться на підказку і впишіть пропущені літери!",cross_hint_btn:"Підказка",cross_check:"Перевірити",cross_next:"Наступне",cross_correct:"Правильно!",cross_wrong:"Спробуйте ще!"}};
+
+let lang='uk';
+// Ukrainian only — no language switching needed
+
+// ══════════ WORD DATA ══════════
+const DATA={en:{easy:[
+{word:"Hello",phonetic:"heh·LOH",hint:"👋 A common greeting",category:"Greetings"},
+{word:"Goodbye",phonetic:"good·BYE",hint:"👋 When leaving",category:"Greetings"},
+{word:"Please",phonetic:"PLEEZ",hint:"🙏 Polite request",category:"Greetings"},
+{word:"Thank you",phonetic:"THANK yoo",hint:"🙏 Showing gratitude",category:"Greetings"},
+{word:"Yes",phonetic:"YESS",hint:"✅ Agreeing",category:"Greetings"},
+{word:"No",phonetic:"NOH",hint:"❌ Disagreeing",category:"Greetings"},
+{word:"Head",phonetic:"HEDD",hint:"🧠 Top of body",category:"Body"},
+{word:"Hand",phonetic:"HANND",hint:"✋ Hold things",category:"Body"},
+{word:"Arm",phonetic:"ARM",hint:"💪 Body part",category:"Body"},
+{word:"Leg",phonetic:"LEGG",hint:"🦵 Walk with these",category:"Body"},
+{word:"Eye",phonetic:"EYE",hint:"👁️ You see with",category:"Body"},
+{word:"Mouth",phonetic:"MOWTH",hint:"👄 You speak with",category:"Body"},
+{word:"Water",phonetic:"WAH·ter",hint:"💧 To drink",category:"Needs"},
+{word:"Food",phonetic:"FOOD",hint:"🍎 To eat",category:"Needs"},
+{word:"Help",phonetic:"HELLP",hint:"🆘 Assistance",category:"Needs"},
+{word:"Pain",phonetic:"PAYN",hint:"😣 Hurts",category:"Needs"},
+{word:"Home",phonetic:"HOHM",hint:"🏠 Where you live",category:"Places"},
+{word:"Bed",phonetic:"BEDD",hint:"🛏️ Sleep here",category:"Home"},
+{word:"Door",phonetic:"DOR",hint:"🚪 Open/close",category:"Home"},
+{word:"Happy",phonetic:"HAP·ee",hint:"😊 Feeling good",category:"Feelings"},
+{word:"Sad",phonetic:"SADD",hint:"😢 Feeling down",category:"Feelings"},
+{word:"Tired",phonetic:"TY·erd",hint:"😴 Need rest",category:"Feelings"},
+{word:"Hot",phonetic:"HOTT",hint:"🔥 Warm",category:"Daily"},
+{word:"Cold",phonetic:"KOHLD",hint:"❄️ Cool",category:"Daily"},
+{word:"Morning",phonetic:"MOR·ning",hint:"🌅 Day start",category:"Time"},
+{word:"Night",phonetic:"NYTE",hint:"🌙 Dark time",category:"Time"},
+{word:"Family",phonetic:"FAM·ih·lee",hint:"👨‍👩‍👧 Loved ones",category:"People"},
+{word:"Doctor",phonetic:"DOK·ter",hint:"👩‍⚕️ Medical",category:"People"},
+{word:"Love",phonetic:"LUV",hint:"❤️ Deep feeling",category:"Feelings"},
+{word:"Eat",phonetic:"EET",hint:"🍽️ Have food",category:"Daily"}],
+medium:[
+{word:"Good morning",phonetic:"good MOR·ning",hint:"🌅 Morning greeting",category:"Greetings"},
+{word:"How are you?",phonetic:"how AR yoo",hint:"🤝 About someone",category:"Greetings"},
+{word:"I need help",phonetic:"eye NEED hellp",hint:"🆘 Request help",category:"Needs"},
+{word:"I am thirsty",phonetic:"eye am THUR·stee",hint:"💧 Want drink",category:"Needs"},
+{word:"I am hungry",phonetic:"eye am HUN·gree",hint:"🍽️ Want food",category:"Needs"},
+{word:"I feel good",phonetic:"eye FEEL good",hint:"😊 Wellness",category:"Feelings"},
+{word:"My head hurts",phonetic:"my HEDD hurts",hint:"🤕 Pain",category:"Body"},
+{word:"Open the door",phonetic:"OH·pen the DOR",hint:"🚪 Request",category:"Home"},
+{word:"Turn on the light",phonetic:"TURN on the LYTE",hint:"💡 Light",category:"Home"},
+{word:"What time is it?",phonetic:"wut TIME iz it",hint:"⏰ Time",category:"Time"},
+{word:"See you later",phonetic:"see YOO lay·ter",hint:"👋 Bye",category:"Greetings"},
+{word:"I love you",phonetic:"eye LUV yoo",hint:"❤️ Love",category:"Feelings"},
+{word:"Call the doctor",phonetic:"KALL the DOK·ter",hint:"📞 Medical",category:"Needs"},
+{word:"Take me home",phonetic:"TAYK mee HOHM",hint:"🏠 Go home",category:"Places"},
+{word:"Sit down please",phonetic:"SIT down PLEEZ",hint:"🪑 Polite",category:"Daily"}],
+hard:[
+{word:"I would like a glass of water, please",phonetic:"eye wood LYKE a glass ov WAH·ter PLEEZ",hint:"💧 Polite request",category:"Needs"},
+{word:"Can you help me get dressed?",phonetic:"kan yoo HELLP mee get DRESST",hint:"👕 Help",category:"Daily"},
+{word:"I need to take my medicine",phonetic:"eye NEED too tayk my MED·ih·sin",hint:"💊 Health",category:"Needs"},
+{word:"I am feeling much better today",phonetic:"eye am FEEL·ing much BET·ter",hint:"😊 Good news",category:"Feelings"},
+{word:"Could you please speak more slowly?",phonetic:"kood yoo PLEEZ speek SLOH·lee",hint:"🐢 Clarity",category:"Greetings"},
+{word:"Thank you for your help",phonetic:"THANK yoo for yor HELLP",hint:"🙏 Gratitude",category:"Greetings"},
+{word:"The weather is very nice today",phonetic:"the WETH·er iz NYCE too·DAY",hint:"☀️ Talk",category:"Daily"},
+{word:"I have an appointment with my doctor",phonetic:"eye hav an ah·POYNT·ment",hint:"📅 Planning",category:"Needs"}]},
+uk:{easy:[
+{word:"Привіт",phonetic:"pry·VIT",hint:"👋 Вітання",category:"Вітання"},
+{word:"До побачення",phonetic:"do po·BA·chen·nya",hint:"👋 Прощання",category:"Вітання"},
+{word:"Будь ласка",phonetic:"bud' LAS·ka",hint:"🙏 Ввічливість",category:"Вітання"},
+{word:"Дякую",phonetic:"DYA·ku·yu",hint:"🙏 Подяка",category:"Вітання"},
+{word:"Так",phonetic:"TAK",hint:"✅ Згода",category:"Вітання"},
+{word:"Ні",phonetic:"NI",hint:"❌ Незгода",category:"Вітання"},
+{word:"Голова",phonetic:"ho·lo·VA",hint:"🧠 Частина тіла",category:"Тіло"},
+{word:"Рука",phonetic:"ru·KA",hint:"✋ Тримаємо",category:"Тіло"},
+{word:"Нога",phonetic:"no·HA",hint:"🦵 Ходимо",category:"Тіло"},
+{word:"Око",phonetic:"O·ko",hint:"👁️ Бачимо",category:"Тіло"},
+{word:"Рот",phonetic:"ROT",hint:"👄 Говоримо",category:"Тіло"},
+{word:"Вухо",phonetic:"VU·kho",hint:"👂 Чуємо",category:"Тіло"},
+{word:"Вода",phonetic:"vo·DA",hint:"💧 Пити",category:"Потреби"},
+{word:"Їжа",phonetic:"YI·zha",hint:"🍎 Їсти",category:"Потреби"},
+{word:"Допоможіть",phonetic:"do·po·mo·ZHIT'",hint:"🆘 Допомога",category:"Потреби"},
+{word:"Біль",phonetic:"BIL'",hint:"😣 Болить",category:"Потреби"},
+{word:"Дім",phonetic:"DIM",hint:"🏠 Житло",category:"Місця"},
+{word:"Ліжко",phonetic:"LIZH·ko",hint:"🛏️ Спимо",category:"Дім"},
+{word:"Двері",phonetic:"DVE·ri",hint:"🚪 Відчиняємо",category:"Дім"},
+{word:"Щасливий",phonetic:"shchas·LY·vyy",hint:"😊 Радість",category:"Почуття"},
+{word:"Сумний",phonetic:"SUM·nyy",hint:"😢 Смуток",category:"Почуття"},
+{word:"Втомлений",phonetic:"vtom·LE·nyy",hint:"😴 Відпочинок",category:"Почуття"},
+{word:"Гаряче",phonetic:"ha·RYA·che",hint:"🔥 Тепло",category:"Щодня"},
+{word:"Холодно",phonetic:"KHO·lod·no",hint:"❄️ Прохолодно",category:"Щодня"},
+{word:"Ранок",phonetic:"RA·nok",hint:"🌅 Початок дня",category:"Час"},
+{word:"Ніч",phonetic:"NICH",hint:"🌙 Темно",category:"Час"},
+{word:"Сім'я",phonetic:"sim·YA",hint:"👨‍👩‍👧 Рідні",category:"Люди"},
+{word:"Лікар",phonetic:"LI·kar",hint:"👩‍⚕️ Медицина",category:"Люди"},
+{word:"Любов",phonetic:"lyu·BOV",hint:"❤️ Почуття",category:"Почуття"},
+{word:"Їсти",phonetic:"YIS·ty",hint:"🍽️ Вживати їжу",category:"Щодня"}],
+medium:[
+{word:"Доброго ранку",phonetic:"DOB·ro·ho RAN·ku",hint:"🌅 Ранок",category:"Вітання"},
+{word:"Як справи?",phonetic:"yak SPRA·vy",hint:"🤝 Запитання",category:"Вітання"},
+{word:"Мені потрібна допомога",phonetic:"me·NI po·TRIB·na",hint:"🆘 Допомога",category:"Потреби"},
+{word:"Я хочу пити",phonetic:"ya KHO·chu PY·ty",hint:"💧 Напій",category:"Потреби"},
+{word:"Я хочу їсти",phonetic:"ya KHO·chu YIS·ty",hint:"🍽️ Їжа",category:"Потреби"},
+{word:"Я добре себе почуваю",phonetic:"ya DOB·re po·chu·VA·yu",hint:"😊 Самопочуття",category:"Почуття"},
+{word:"У мене болить голова",phonetic:"u ME·ne bo·LYT'",hint:"🤕 Біль",category:"Тіло"},
+{word:"Відчиніть двері",phonetic:"vid·chy·NIT' DVE·ri",hint:"🚪 Прохання",category:"Дім"},
+{word:"Увімкніть світло",phonetic:"u·vim·KNIT' SVIT·lo",hint:"💡 Світло",category:"Дім"},
+{word:"Котра година?",phonetic:"KOT·ra ho·DY·na",hint:"⏰ Час",category:"Час"},
+{word:"До зустрічі",phonetic:"do ZUS·tri·chi",hint:"👋 Прощання",category:"Вітання"},
+{word:"Я тебе люблю",phonetic:"ya te·BE lyub·LYU",hint:"❤️ Любов",category:"Почуття"},
+{word:"Викличте лікаря",phonetic:"VYK·lych·te LI·ka·rya",hint:"📞 Медицина",category:"Потреби"},
+{word:"Відвезіть мене додому",phonetic:"vid·ve·ZIT' do·DO·mu",hint:"🏠 Додому",category:"Місця"},
+{word:"Сядьте, будь ласка",phonetic:"SYAD'·te bud' LAS·ka",hint:"🪑 Ввічливість",category:"Щодня"}],
+hard:[
+{word:"Дайте мені, будь ласка, склянку води",phonetic:"DAY·te me·NI SKLYAN·ku VO·dy",hint:"💧 Прохання",category:"Потреби"},
+{word:"Мені потрібно прийняти ліки",phonetic:"me·NI po·TRIB·no LI·ky",hint:"💊 Здоров'я",category:"Потреби"},
+{word:"Сьогодні я почуваюся краще",phonetic:"s'o·HOD·ni KRA·shche",hint:"😊 Новини",category:"Почуття"},
+{word:"Будь ласка, говоріть повільніше",phonetic:"ho·vo·RIT' po·VIL'·ni·she",hint:"🐢 Ясність",category:"Вітання"},
+{word:"Я хотів би піти на прогулянку",phonetic:"pi·TY na pro·HU·lyan·ku",hint:"🚶 Активність",category:"Щодня"},
+{word:"Дякую за вашу допомогу",phonetic:"DYA·ku·yu za do·po·MO·hu",hint:"🙏 Подяка",category:"Вітання"},
+{word:"Сьогодні дуже гарна погода",phonetic:"DU·zhe HAR·na po·HO·da",hint:"☀️ Розмова",category:"Щодня"},
+{word:"У мене завтра візит до лікаря",phonetic:"ZAV·tra VI·zyt do LI·ka·rya",hint:"📅 План",category:"Потреби"}]}};
+const EXTRA_DATA={"en":{"easy":[{"word":"Mother","phonetic":"MUTH·er","hint":"👩 Family member","category":"People"},{"word":"Father","phonetic":"FAH·ther","hint":"👨 Family member","category":"People"},{"word":"Brother","phonetic":"BRUH·ther","hint":"👦 Family member","category":"People"},{"word":"Sister","phonetic":"SIS·ter","hint":"👧 Family member","category":"People"},{"word":"Baby","phonetic":"BAY·bee","hint":"👶 Small child","category":"People"},{"word":"Nurse","phonetic":"NURS","hint":"👩‍⚕️ Helps patients","category":"People"},{"word":"Teacher","phonetic":"TEE·cher","hint":"📚 Helps you learn","category":"People"},{"word":"Friend","phonetic":"FREND","hint":"🤝 Someone you like","category":"People"},{"word":"Boy","phonetic":"BOY","hint":"👦 Young male","category":"People"},{"word":"Girl","phonetic":"GURL","hint":"👧 Young female","category":"People"},{"word":"Apple","phonetic":"AP·uhl","hint":"🍎 Fruit","category":"Food"},{"word":"Bread","phonetic":"BRED","hint":"🍞 Bakery food","category":"Food"},{"word":"Milk","phonetic":"MILK","hint":"🥛 White drink","category":"Food"},{"word":"Tea","phonetic":"TEE","hint":"☕ Warm drink","category":"Food"},{"word":"Soup","phonetic":"SOOP","hint":"🥣 Warm food","category":"Food"},{"word":"Rice","phonetic":"RYSE","hint":"🍚 Grain food","category":"Food"},{"word":"Fish","phonetic":"FISH","hint":"🐟 Sea food","category":"Food"},{"word":"Chicken","phonetic":"CHIK·in","hint":"🍗 Meat","category":"Food"},{"word":"Banana","phonetic":"buh·NAN·uh","hint":"🍌 Fruit","category":"Food"},{"word":"Orange","phonetic":"OR·inj","hint":"🍊 Fruit","category":"Food"},{"word":"Shirt","phonetic":"SHURT","hint":"👕 Clothes","category":"Clothes"},{"word":"Shoes","phonetic":"SHOOZ","hint":"👟 Wear on feet","category":"Clothes"},{"word":"Coat","phonetic":"KOHT","hint":"🧥 Warm clothes","category":"Clothes"},{"word":"Hat","phonetic":"HAT","hint":"🧢 Wear on head","category":"Clothes"},{"word":"Socks","phonetic":"SOKS","hint":"🧦 Wear on feet","category":"Clothes"},{"word":"Bus","phonetic":"BUS","hint":"🚌 Transport","category":"Transport"},{"word":"Car","phonetic":"KAR","hint":"🚗 Transport","category":"Transport"},{"word":"Train","phonetic":"TRAYN","hint":"🚆 Transport","category":"Transport"},{"word":"Bike","phonetic":"BYKE","hint":"🚲 Transport","category":"Transport"},{"word":"Taxi","phonetic":"TAK·see","hint":"🚕 Transport","category":"Transport"},{"word":"School","phonetic":"SKOOL","hint":"🏫 Place to learn","category":"Places"},{"word":"Hospital","phonetic":"HOS·pi·tl","hint":"🏥 Medical place","category":"Places"},{"word":"Pharmacy","phonetic":"FAR·muh·see","hint":"💊 Medicine shop","category":"Places"},{"word":"Park","phonetic":"PARK","hint":"🌳 Green place","category":"Places"},{"word":"Bathroom","phonetic":"BATH·room","hint":"🚿 Wash here","category":"Home"},{"word":"Window","phonetic":"WIN·doh","hint":"🪟 See outside","category":"Home"},{"word":"Chair","phonetic":"CHAIR","hint":"🪑 Sit here","category":"Home"},{"word":"Table","phonetic":"TAY·buhl","hint":"🍽️ Put things here","category":"Home"},{"word":"Pillow","phonetic":"PIL·oh","hint":"🛏️ Soft bed item","category":"Home"},{"word":"Blanket","phonetic":"BLANG·kit","hint":"🛌 Keeps you warm","category":"Home"}],"medium":[{"word":"I want water","phonetic":"eye WANT WAH·ter","hint":"💧 Ask for a drink","category":"Needs"},{"word":"I want tea","phonetic":"eye WANT tee","hint":"☕ Ask for tea","category":"Food"},{"word":"I want soup","phonetic":"eye WANT soop","hint":"🥣 Ask for soup","category":"Food"},{"word":"Please open the window","phonetic":"pleez OH·pen the WIN·doh","hint":"🪟 Fresh air","category":"Home"},{"word":"Please close the door","phonetic":"pleez KLOHZ the dor","hint":"🚪 Close request","category":"Home"},{"word":"I need my shoes","phonetic":"eye NEED my shooz","hint":"👟 Ask for clothes","category":"Clothes"},{"word":"Where is my coat?","phonetic":"wair iz my koht","hint":"🧥 Looking for clothes","category":"Clothes"},{"word":"Call my family","phonetic":"kawl my FAM·ih·lee","hint":"📞 Contact family","category":"People"},{"word":"I need the nurse","phonetic":"eye NEED the nurs","hint":"👩‍⚕️ Medical help","category":"Needs"},{"word":"I need the bathroom","phonetic":"eye NEED the BATH·room","hint":"🚿 Ask for toilet","category":"Needs"},{"word":"Please sit with me","phonetic":"pleez sit with mee","hint":"🪑 Company","category":"Feelings"},{"word":"Take me to the park","phonetic":"tayk mee to the park","hint":"🌳 Go outside","category":"Places"},{"word":"I am cold today","phonetic":"eye am kohld too·DAY","hint":"❄️ Feeling cold","category":"Feelings"},{"word":"I am very tired","phonetic":"eye am VEH·ree TY·erd","hint":"😴 Need rest","category":"Feelings"},{"word":"My arm hurts","phonetic":"my arm hurts","hint":"💪 Pain in arm","category":"Body"},{"word":"My leg hurts","phonetic":"my leg hurts","hint":"🦵 Pain in leg","category":"Body"},{"word":"Please help me walk","phonetic":"pleez help mee wawk","hint":"🚶 Movement help","category":"Needs"},{"word":"I want to sleep","phonetic":"eye want to sleep","hint":"🛏️ Rest","category":"Daily"},{"word":"Turn off the light","phonetic":"turn off the lyte","hint":"💡 Light request","category":"Home"},{"word":"Please bring my bag","phonetic":"pleez bring my bag","hint":"👜 Ask for bag","category":"Daily"},{"word":"I need my phone","phonetic":"eye need my fohn","hint":"📱 Ask for phone","category":"Daily"},{"word":"I would like bread","phonetic":"eye wood like bred","hint":"🍞 Ask for food","category":"Food"},{"word":"I would like milk","phonetic":"eye wood like milk","hint":"🥛 Ask for drink","category":"Food"},{"word":"Where is the doctor?","phonetic":"wair iz the dok·ter","hint":"👩‍⚕️ Looking for doctor","category":"People"},{"word":"Let's go outside","phonetic":"lets go out·SYDE","hint":"🌤️ Go outdoors","category":"Places"},{"word":"Please wait here","phonetic":"pleez wayt heer","hint":"⏳ Stay here","category":"Daily"},{"word":"Come with me","phonetic":"kum with mee","hint":"🚶 Invitation","category":"People"},{"word":"I feel sad today","phonetic":"eye feel sad too·DAY","hint":"😢 Emotion","category":"Feelings"},{"word":"I feel happy now","phonetic":"eye feel hap·ee now","hint":"😊 Emotion","category":"Feelings"},{"word":"Please read this","phonetic":"pleez reed this","hint":"📖 Reading request","category":"Daily"},{"word":"Please write my name","phonetic":"pleez ryte my naym","hint":"✍️ Writing help","category":"Daily"},{"word":"I need fresh air","phonetic":"eye need fresh air","hint":"🌬️ Open space","category":"Needs"},{"word":"Please bring water","phonetic":"pleez bring wah·ter","hint":"💧 Assistance","category":"Needs"},{"word":"Take me to school","phonetic":"tayk mee to skool","hint":"🏫 Travel request","category":"Places"},{"word":"Take me to hospital","phonetic":"tayk mee to hos·pi·tl","hint":"🏥 Travel request","category":"Places"}],"hard":[{"word":"Please help me put on my coat","phonetic":"pleez help mee poot on my koht","hint":"🧥 Dressing help","category":"Clothes"},{"word":"I am ready to go home now","phonetic":"eye am REH·dee to go hohm now","hint":"🏠 Want to leave","category":"Places"},{"word":"Could you bring me a glass of milk?","phonetic":"kood yoo bring mee a glass of milk","hint":"🥛 Polite drink request","category":"Food"},{"word":"I would like to call my daughter","phonetic":"eye wood like to kawl my daw·ter","hint":"📞 Family contact","category":"People"},{"word":"Please take me to the bathroom","phonetic":"pleez tayk mee to the bath·room","hint":"🚿 Personal care","category":"Needs"},{"word":"I need to rest in my bed","phonetic":"eye need to rest in my bed","hint":"🛏️ Rest request","category":"Daily"},{"word":"Can you open the window for me?","phonetic":"kan yoo oh·pen the win·doh for mee","hint":"🪟 Fresh air request","category":"Home"},{"word":"Please tell my family I am okay","phonetic":"pleez tell my fam·ih·lee eye am oh·KAY","hint":"❤️ Reassurance","category":"People"},{"word":"I feel pain in my left leg","phonetic":"eye feel payn in my left leg","hint":"🦵 Specific pain","category":"Body"},{"word":"I cannot find my phone or my bag","phonetic":"eye kan·not fynd my fohn or my bag","hint":"📱 Missing items","category":"Daily"},{"word":"I would like some soup and bread, please","phonetic":"eye wood like sum soop and bred pleez","hint":"🥣 Food request","category":"Food"},{"word":"The nurse is helping me feel better","phonetic":"the nurs is help·ing mee feel bet·ter","hint":"👩‍⚕️ Support","category":"People"},{"word":"Please walk with me to the park","phonetic":"pleez wawk with mee to the park","hint":"🌳 Movement support","category":"Places"},{"word":"I need to visit the pharmacy today","phonetic":"eye need to viz·it the far·muh·see too·day","hint":"💊 Medicine errand","category":"Places"},{"word":"Could you please speak in a calm voice?","phonetic":"kood yoo pleez speek in a kahm voyce","hint":"🗣️ Clear communication","category":"Feelings"},{"word":"I am happy to see my friend today","phonetic":"eye am hap·ee to see my frend too·day","hint":"😊 Social connection","category":"Feelings"},{"word":"Please write down the time for me","phonetic":"pleez ryte down the time for mee","hint":"⏰ Memory help","category":"Daily"},{"word":"I would like to sit by the window","phonetic":"eye wood like to sit by the win·doh","hint":"🪟 Preference","category":"Home"},{"word":"Take me to the hospital if the pain gets worse","phonetic":"tayk mee to the hos·pi·tl if the payn gets wurse","hint":"🏥 Safety","category":"Needs"},{"word":"Thank you for bringing me warm tea","phonetic":"thank yoo for bring·ing mee warm tee","hint":"☕ Gratitude","category":"Food"},{"word":"Can you help me get dressed for school?","phonetic":"kan yoo help mee get drest for skool","hint":"👕 Dressing help","category":"Clothes"},{"word":"Please remind me to take my medicine after lunch","phonetic":"pleez ree·mynd mee to tayk my med·ih·sin af·ter lunch","hint":"💊 Routine","category":"Needs"},{"word":"I would like to travel by bus today","phonetic":"eye wood like to trav·el by bus too·day","hint":"🚌 Transport","category":"Transport"},{"word":"Please put the blanket on my bed","phonetic":"pleez poot the blang·kit on my bed","hint":"🛌 Comfort","category":"Home"},{"word":"I need my shoes before we go outside","phonetic":"eye need my shooz be·for we go out·side","hint":"👟 Preparation","category":"Clothes"},{"word":"The teacher will help me read this book","phonetic":"the tee·cher will help mee reed this book","hint":"📚 Learning help","category":"People"},{"word":"Please bring my chair closer to the table","phonetic":"pleez bring my chair kloh·ser to the tay·buhl","hint":"🪑 Seating help","category":"Home"},{"word":"I want to see the doctor this morning","phonetic":"eye want to see the dok·ter this mor·ning","hint":"👩‍⚕️ Appointment","category":"People"},{"word":"Could you please wait here with me for a minute?","phonetic":"kood yoo pleez wayt heer with mee for a min·it","hint":"⏳ Support","category":"Feelings"},{"word":"I am feeling stronger and more hopeful today","phonetic":"eye am fee·ling stron·ger and more hope·ful too·day","hint":"🌟 Recovery","category":"Feelings"}]},"uk":{"easy":[{"word":"Мама","phonetic":"MA·ma","hint":"👩 Член сім'ї","category":"Люди"},{"word":"Тато","phonetic":"TA·to","hint":"👨 Член сім'ї","category":"Люди"},{"word":"Брат","phonetic":"BRAT","hint":"👦 Член сім'ї","category":"Люди"},{"word":"Сестра","phonetic":"ses·TRA","hint":"👧 Член сім'ї","category":"Люди"},{"word":"Дитина","phonetic":"dy·TY·na","hint":"👶 Маленька людина","category":"Люди"},{"word":"Медсестра","phonetic":"med·SES·tra","hint":"👩‍⚕️ Допомагає в лікарні","category":"Люди"},{"word":"Вчитель","phonetic":"VCHY·tel'","hint":"📚 Навчає","category":"Люди"},{"word":"Друг","phonetic":"DRUH","hint":"🤝 Приятель","category":"Люди"},{"word":"Хлопець","phonetic":"khlo·PETS'","hint":"👦 Юнак","category":"Люди"},{"word":"Дівчина","phonetic":"DIV·chy·na","hint":"👧 Дівчина","category":"Люди"},{"word":"Яблуко","phonetic":"YAB·lu·ko","hint":"🍎 Фрукт","category":"Їжа"},{"word":"Хліб","phonetic":"KHLIB","hint":"🍞 Хліб","category":"Їжа"},{"word":"Молоко","phonetic":"mo·lo·KO","hint":"🥛 Напій","category":"Їжа"},{"word":"Чай","phonetic":"CHAY","hint":"☕ Теплий напій","category":"Їжа"},{"word":"Суп","phonetic":"SUP","hint":"🥣 Гаряча страва","category":"Їжа"},{"word":"Рис","phonetic":"RYS","hint":"🍚 Крупа","category":"Їжа"},{"word":"Риба","phonetic":"RY·ba","hint":"🐟 Їжа з моря","category":"Їжа"},{"word":"Курка","phonetic":"KUR·ka","hint":"🍗 Птах","category":"Їжа"},{"word":"Банан","phonetic":"ba·NAN","hint":"🍌 Фрукт","category":"Їжа"},{"word":"Апельсин","phonetic":"a·pel'·SYN","hint":"🍊 Фрукт","category":"Їжа"},{"word":"Сорочка","phonetic":"so·ROCH·ka","hint":"👕 Одяг","category":"Одяг"},{"word":"Черевики","phonetic":"che·re·VY·ky","hint":"👟 Взуття","category":"Одяг"},{"word":"Пальто","phonetic":"pal'·TO","hint":"🧥 Теплий одяг","category":"Одяг"},{"word":"Шапка","phonetic":"SHAP·ka","hint":"🧢 На голову","category":"Одяг"},{"word":"Шкарпетки","phonetic":"shkar·PET·ky","hint":"🧦 На ноги","category":"Одяг"},{"word":"Автобус","phonetic":"av·TO·bus","hint":"🚌 Транспорт","category":"Транспорт"},{"word":"Машина","phonetic":"ma·SHY·na","hint":"🚗 Транспорт","category":"Транспорт"},{"word":"Потяг","phonetic":"PO·tyah","hint":"🚆 Транспорт","category":"Транспорт"},{"word":"Велосипед","phonetic":"ve·lo·sy·PED","hint":"🚲 Транспорт","category":"Транспорт"},{"word":"Таксі","phonetic":"tak·SI","hint":"🚕 Транспорт","category":"Транспорт"},{"word":"Школа","phonetic":"SHKO·la","hint":"🏫 Місце навчання","category":"Місця"},{"word":"Лікарня","phonetic":"li·KAR·nya","hint":"🏥 Медичний заклад","category":"Місця"},{"word":"Аптека","phonetic":"ap·TE·ka","hint":"💊 Магазин ліків","category":"Місця"},{"word":"Парк","phonetic":"PARK","hint":"🌳 Зелена зона","category":"Місця"},{"word":"Ванна","phonetic":"VAN·na","hint":"🚿 Кімната для миття","category":"Дім"},{"word":"Вікно","phonetic":"vik·NO","hint":"🪟 Дивимось надвір","category":"Дім"},{"word":"Стілець","phonetic":"STI·lets'","hint":"🪑 Сидимо","category":"Дім"},{"word":"Стіл","phonetic":"STIL","hint":"🍽️ Ставимо речі","category":"Дім"},{"word":"Подушка","phonetic":"po·DUSH·ka","hint":"🛏️ М'яка річ","category":"Дім"},{"word":"Ковдра","phonetic":"KOV·dra","hint":"🛌 Гріє нас","category":"Дім"}],"medium":[{"word":"Я хочу води","phonetic":"ya kho·CHU vo·DY","hint":"💧 Прохання про воду","category":"Потреби"},{"word":"Я хочу чаю","phonetic":"ya kho·CHU CHA·yu","hint":"☕ Прохання про чай","category":"Їжа"},{"word":"Я хочу суп","phonetic":"ya kho·CHU sup","hint":"🥣 Прохання про суп","category":"Їжа"},{"word":"Будь ласка, відкрийте вікно","phonetic":"bud' LAS·ka, vid·KRYY·te vik·NO","hint":"🪟 Свіже повітря","category":"Дім"},{"word":"Будь ласка, зачиніть двері","phonetic":"bud' LAS·ka, za·chy·NIT' DVE·ri","hint":"🚪 Закрити двері","category":"Дім"},{"word":"Мені потрібні черевики","phonetic":"me·NI po·TRIB·ni che·re·VY·ky","hint":"👟 Потрібне взуття","category":"Одяг"},{"word":"Де моє пальто?","phonetic":"de mo·YE pal'·TO","hint":"🧥 Пошук одягу","category":"Одяг"},{"word":"Подзвоніть моїй сім'ї","phonetic":"podz·vo·NIT' mo·YIY sim·YI","hint":"📞 Подзвонити рідним","category":"Люди"},{"word":"Мені потрібна медсестра","phonetic":"me·NI po·TRIB·na med·SES·tra","hint":"👩‍⚕️ Медична допомога","category":"Потреби"},{"word":"Мені потрібна ванна кімната","phonetic":"me·NI po·TRIB·na VAN·na kim·NA·ta","hint":"🚿 Особисті потреби","category":"Потреби"},{"word":"Будь ласка, посидьте зі мною","phonetic":"bud' LAS·ka, po·SYD'·te zi mno·YU","hint":"🪑 Підтримка","category":"Почуття"},{"word":"Відвезіть мене до парку","phonetic":"vid·ve·ZIT' me·NE do PAR·ku","hint":"🌳 Прогулянка","category":"Місця"},{"word":"Мені сьогодні холодно","phonetic":"me·NI s'o·HOD·ni kho·LOD·no","hint":"❄️ Відчуття","category":"Почуття"},{"word":"Я дуже втомився","phonetic":"ya DU·zhe vto·MYV·sya","hint":"😴 Потрібен відпочинок","category":"Почуття"},{"word":"У мене болить рука","phonetic":"u ME·ne bo·LYT' ru·KA","hint":"💪 Біль у руці","category":"Тіло"},{"word":"У мене болить нога","phonetic":"u ME·ne bo·LYT' no·HA","hint":"🦵 Біль у нозі","category":"Тіло"},{"word":"Будь ласка, допоможіть мені йти","phonetic":"bud' LAS·ka, do·po·mo·ZHIT' me·NI yty","hint":"🚶 Допомога в ходьбі","category":"Потреби"},{"word":"Я хочу спати","phonetic":"ya kho·CHU SPA·ty","hint":"🛏️ Відпочинок","category":"Щодня"},{"word":"Вимкніть світло","phonetic":"vym·KNIT' SVIT·lo","hint":"💡 Прохання","category":"Дім"},{"word":"Будь ласка, принесіть мою сумку","phonetic":"bud' LAS·ka, pry·ne·SIT' mo·YU SUM·ku","hint":"👜 Потрібна сумка","category":"Щодня"},{"word":"Мені потрібен телефон","phonetic":"me·NI po·TRI·ben te·le·FON","hint":"📱 Потрібен телефон","category":"Щодня"},{"word":"Я хотів би хліба","phonetic":"ya kho·TIV by KHLI·ba","hint":"🍞 Прохання про їжу","category":"Їжа"},{"word":"Я хотів би молока","phonetic":"ya kho·TIV by mo·lo·KA","hint":"🥛 Прохання про напій","category":"Їжа"},{"word":"Де лікар?","phonetic":"de LI·kar","hint":"👩‍⚕️ Пошук лікаря","category":"Люди"},{"word":"Ходімо надвір","phonetic":"kho·DI·mo nad·VIR","hint":"🌤️ Прогулянка","category":"Місця"},{"word":"Будь ласка, зачекайте тут","phonetic":"bud' LAS·ka, za·che·KAY·te tut","hint":"⏳ Почекати","category":"Щодня"},{"word":"Ходіть зі мною","phonetic":"kho·DIT' zi mno·YU","hint":"🚶 Запрошення","category":"Люди"},{"word":"Мені сьогодні сумно","phonetic":"me·NI s'o·HOD·ni SUM·no","hint":"😢 Емоція","category":"Почуття"},{"word":"Я зараз щасливий","phonetic":"ya za·RAZ shchas·LY·vyy","hint":"😊 Емоція","category":"Почуття"},{"word":"Будь ласка, прочитайте це","phonetic":"bud' LAS·ka, pro·chy·TAY·te tse","hint":"📖 Читання","category":"Щодня"},{"word":"Будь ласка, напишіть моє ім'я","phonetic":"bud' LAS·ka, na·py·SHIT' mo·YE im·YA","hint":"✍️ Письмо","category":"Щодня"},{"word":"Мені потрібне свіже повітря","phonetic":"me·NI po·TRIB·ne SVI·zhe po·VIT·rya","hint":"🌬️ Повітря","category":"Потреби"},{"word":"Будь ласка, принесіть воду","phonetic":"bud' LAS·ka, pry·ne·SIT' vo·DU","hint":"💧 Допомога","category":"Потреби"},{"word":"Відвезіть мене до школи","phonetic":"vid·ve·ZIT' me·NE do SHKO·ly","hint":"🏫 Поїздка","category":"Місця"},{"word":"Відвезіть мене до лікарні","phonetic":"vid·ve·ZIT' me·NE do li·KAR·ni","hint":"🏥 Поїздка","category":"Місця"}],"hard":[{"word":"Будь ласка, допоможіть мені одягнути пальто","phonetic":"bud' LAS·ka, do·po·mo·ZHIT' me·NI o·dyag·NU·ty pal'·TO","hint":"🧥 Допомога з одягом","category":"Одяг"},{"word":"Я готовий зараз іти додому","phonetic":"ya ho·TO·vyy za·RAZ y·TY do·DO·mu","hint":"🏠 Хочу додому","category":"Місця"},{"word":"Чи можете принести мені склянку молока?","phonetic":"chy MO·zhe·te pry·nes·TY me·NI sklyan·KU mo·lo·KA","hint":"🥛 Ввічливе прохання","category":"Їжа"},{"word":"Я хотів би подзвонити дочці","phonetic":"ya kho·TIV by podz·vo·NY·ty DOCH·tsi","hint":"📞 Зв'язок із сім'єю","category":"Люди"},{"word":"Будь ласка, відведіть мене до ванної кімнати","phonetic":"bud' LAS·ka, vid·ve·DIT' me·NE do VAN·no·yi kim·NA·ty","hint":"🚿 Особистий догляд","category":"Потреби"},{"word":"Мені потрібно відпочити у своєму ліжку","phonetic":"me·NI po·TRIB·no vid·po·chy·TY u svo·YE·mu LIZH·ku","hint":"🛏️ Відпочинок","category":"Щодня"},{"word":"Чи можете відкрити вікно для мене?","phonetic":"chy MO·zhe·te vid·KRY·ty vik·NO dlya me·NE","hint":"🪟 Свіже повітря","category":"Дім"},{"word":"Будь ласка, скажіть моїй сім'ї, що зі мною все добре","phonetic":"bud' LAS·ka, ska·ZHIT' mo·YIY sim·YI shcho zi mno·YU vse DOB·re","hint":"❤️ Заспокоєння","category":"Люди"},{"word":"Я відчуваю біль у лівій нозі","phonetic":"ya vid·chu·VA·yu bil' u li·VIY no·ZI","hint":"🦵 Точний біль","category":"Тіло"},{"word":"Я не можу знайти телефон і сумку","phonetic":"ya ne mo·ZHU znav·TY te·le·FON i SUM·ku","hint":"📱 Загублені речі","category":"Щодня"},{"word":"Я хотів би супу і хліба, будь ласка","phonetic":"ya kho·TIV by SU·pu i KHLI·ba, bud' LAS·ka","hint":"🥣 Прохання про їжу","category":"Їжа"},{"word":"Медсестра допомагає мені почуватися краще","phonetic":"med·SES·tra do·po·ma·HA·ye me·NI po·chu·VA·ty·sya KRA·shche","hint":"👩‍⚕️ Підтримка","category":"Люди"},{"word":"Будь ласка, пройдіться зі мною до парку","phonetic":"bud' LAS·ka, proy·DIT'·sya zi mno·YU do PAR·ku","hint":"🌳 Рух","category":"Місця"},{"word":"Мені сьогодні потрібно зайти до аптеки","phonetic":"me·NI s'o·HOD·ni po·TRIB·no zay·TY do ap·TE·ky","hint":"💊 Ліки","category":"Місця"},{"word":"Будь ласка, говоріть спокійним голосом","phonetic":"bud' LAS·ka, ho·vo·RIT' spo·KIY·nym HO·lo·som","hint":"🗣️ Спокійне мовлення","category":"Почуття"},{"word":"Я радий бачити друга сьогодні","phonetic":"ya RA·dyy ba·CHY·ty DRU·ha s'o·HOD·ni","hint":"😊 Соціальна радість","category":"Почуття"},{"word":"Будь ласка, запишіть для мене час","phonetic":"bud' LAS·ka, za·py·SHIT' dlya me·NE chas","hint":"⏰ Пам'ять","category":"Щодня"},{"word":"Я хотів би сидіти біля вікна","phonetic":"ya kho·TIV by sy·DI·ty bi·LYA vik·NA","hint":"🪟 Побажання","category":"Дім"},{"word":"Відвезіть мене до лікарні, якщо біль посилиться","phonetic":"vid·ve·ZIT' me·NE do li·KAR·ni, yak·SHCHO bil' po·SY·lyt'·sya","hint":"🏥 Безпека","category":"Потреби"},{"word":"Дякую, що принесли мені теплий чай","phonetic":"DYA·ku·yu, shcho pry·nes·LY me·NI TEP·lyy chay","hint":"☕ Подяка","category":"Їжа"},{"word":"Чи можете допомогти мені одягнутися до школи?","phonetic":"chy MO·zhe·te do·po·moh·TY me·NI o·dyag·NU·ty·sya do SHKO·ly","hint":"👕 Одяг","category":"Одяг"},{"word":"Будь ласка, нагадайте мені прийняти ліки після обіду","phonetic":"bud' LAS·ka, na·ha·DAY·te me·NI pry·YNYA·ty LI·ky pis·LYA o·BI·du","hint":"💊 Розклад","category":"Потреби"},{"word":"Я хотів би сьогодні їхати автобусом","phonetic":"ya kho·TIV by s'o·HOD·ni yi·KHA·ty av·TO·bu·som","hint":"🚌 Транспорт","category":"Транспорт"},{"word":"Будь ласка, покладіть ковдру на моє ліжко","phonetic":"bud' LAS·ka, po·KLA·dit' KOV·dru na mo·YE LIZH·ko","hint":"🛌 Комфорт","category":"Дім"},{"word":"Мені потрібні черевики, перш ніж ми підемо надвір","phonetic":"me·NI po·TRIB·ni che·re·VY·ky, persh nizh my pi·DE·mo nad·VIR","hint":"👟 Підготовка","category":"Одяг"},{"word":"Учитель допоможе мені прочитати цю книгу","phonetic":"u·CHY·tel' do·po·MO·zhe me·NI pro·chy·TA·ty tsyu KNY·hu","hint":"📚 Навчання","category":"Люди"},{"word":"Будь ласка, посуньте стілець ближче до столу","phonetic":"bud' LAS·ka, po·SUN'·te STI·lets' BLYZH·che do STO·lu","hint":"🪑 Сидіння","category":"Дім"},{"word":"Я хочу побачити лікаря сьогодні вранці","phonetic":"ya kho·CHU po·ba·CHY·ty LI·ka·rya s'o·HOD·ni VRAN·tsi","hint":"👩‍⚕️ Візит","category":"Люди"},{"word":"Чи можете почекати тут зі мною хвилинку?","phonetic":"chy MO·zhe·te po·che·KA·ty tut zi mno·YU khvy·LYN·ku","hint":"⏳ Підтримка","category":"Почуття"},{"word":"Сьогодні я почуваюся сильнішим і спокійнішим","phonetic":"s'o·HOD·ni ya po·chu·VA·yu·sya SYL'·ni·shym i spo·KIY·ni·shym","hint":"🌟 Відновлення","category":"Почуття"}]}};
+for(const lc of Object.keys(EXTRA_DATA)){for(const lvl of Object.keys(EXTRA_DATA[lc])){DATA[lc][lvl]=DATA[lc][lvl].concat(EXTRA_DATA[lc][lvl]);}}
+
+
+// ══════════ WORD DICTIONARY FOR CONSTRUCTOR ══════════
+const WORD_DICT={
+en:["hello","help","hand","head","home","happy","hot","cold","water","food","door","bed","yes","no","love","arm","leg","eye","good","bad","pain","sad","tired","family","doctor","morning","night","eat","drink","sit","stand","walk","talk","sleep","wake","open","close","come","go","stop","start","please","thank","sorry","right","left","up","down","big","small","new","old","day","week","month","name","time","back","more","want","need","feel","see","hear","know","think","like","hope","rest","move","read","write","call","wait","play","work","light","dark","rain","sun","warm","cool","nice","fine","okay","sure","well","here","there","now","soon","today","cat","dog","car","book","milk","tea","bread","chair","table","phone","window","bath","shirt","shoe","pill","nurse","son","wife","girl","boy","man","baby","friend","room","cup","plate","key","bag","hat","coat"],
+uk:["привіт","так","ні","дякую","будь","ласка","допомога","вода","їжа","дім","рука","нога","голова","око","рот","вухо","біль","ліжко","двері","ранок","ніч","день","сім'я","лікар","добре","погано","радість","сумний","їсти","пити","сидіти","стояти","ходити","говорити","спати","відчинити","закрити","прийти","піти","зупинитися","почати","любов","надія","читати","писати","чекати","грати","працювати","світло","темно","дощ","сонце","тепло","холод","гаряче","холодно","добрий","новий","старий","великий","малий","час","тиждень","місяць","хліб","молоко","чай","кава","стілець","стіл","телефон","вікно","ванна","сорочка","взуття","таблетка","медсестра","син","дочка","дружина","чоловік","дівчина","хлопець","дитина","друг","кімната","чашка","тарілка","ключ","сумка","шапка","пальто","кіт","собака","машина","книга","мама","тато","бабуся","дідусь","серце","усмішка","щастя","здоров'я","сила","спокій","світ","небо","зірка","квітка","дерево","гора","море","річка","місто","вулиця","парк","школа","лікарня","аптека","магазин","робота"]
+};
+const EXTRA_WORD_DICT={"en":["airport","apple","baby","banana","bathroom","bike","blanket","boy","bread","bridge","brother","bus","butter","calendar","call my family","can you help me get dressed for school?","can you open the window for me?","car","care","chair","cheese","chicken","clock","coat","coffee","come with me","computer","could you bring me a glass of milk?","could you please speak in a calm voice?","could you please wait here with me for a minute?","dance","dress","exercise","fast","father","fish","focus","fork","friend","garden","gentle","girl","gloves","grapes","hat","hospital","i am cold today","i am feeling stronger and more hopeful today","i am happy to see my friend today","i am ready to go home now","i am very tired","i cannot find my phone or my bag","i feel happy now","i feel pain in my left leg","i feel sad today","i need fresh air","i need my phone","i need my shoes","i need my shoes before we go outside","i need the bathroom","i need the nurse","i need to rest in my bed","i need to visit the pharmacy today","i want soup","i want tea","i want to see the doctor this morning","i want to sleep","i want water","i would like bread","i would like milk","i would like some soup and bread, please","i would like to call my daughter","i would like to sit by the window","i would like to travel by bus today","jacket","juice","kitchen","let's go outside","library","loud","memory","milk","mother","music","my arm hurts","my leg hurts","nurse","orange","pants","paper","park","pencil","pharmacy","picture","pillow","plate","please bring my bag","please bring my chair closer to the table","please bring water","please close the door","please help me put on my coat","please help me walk","please open the window","please put the blanket on my bed","please read this","please remind me to take my medicine after lunch","please sit with me","please take me to the bathroom","please tell my family i am okay","please wait here","please walk with me to the park","please write down the time for me","please write my name","potato","quiet","radio","rice","safety","scarf","school","shirt","shoes","sister","slow","smile","socks","soup","spoon","station","strawberry","street","strong","sweater","table","tablet","take me to hospital","take me to school","take me to the hospital if the pain gets worse","take me to the park","taxi","tea","teacher","television","thank you for bringing me warm tea","the nurse is helping me feel better","the teacher will help me read this book","therapy","tomato","train","turn off the light","where is my coat?","where is the doctor?","window"],"uk":["автобус","аеропорт","апельсин","аптека","банан","безпека","брат","будь ласка, відведіть мене до ванної кімнати","будь ласка, відкрийте вікно","будь ласка, говоріть спокійним голосом","будь ласка, допоможіть мені йти","будь ласка, допоможіть мені одягнути пальто","будь ласка, запишіть для мене час","будь ласка, зачекайте тут","будь ласка, зачиніть двері","будь ласка, нагадайте мені прийняти ліки після обіду","будь ласка, напишіть моє ім'я","будь ласка, покладіть ковдру на моє ліжко","будь ласка, посидьте зі мною","будь ласка, посуньте стілець ближче до столу","будь ласка, принесіть воду","будь ласка, принесіть мою сумку","будь ласка, пройдіться зі мною до парку","будь ласка, прочитайте це","будь ласка, скажіть моїй сім'ї, що зі мною все добре","бібліотека","ванна","велосипед","веселий","вечеря","виделка","вимкніть світло","виноград","вправа","вчитель","відвезіть мене до лікарні","відвезіть мене до лікарні, якщо біль посилиться","відвезіть мене до парку","відвезіть мене до школи","вікно","годинник","гучний","де лікар?","де моє пальто?","дитина","друг","дякую, що принесли мені теплий чай","дівчина","календар","картина","картопля","ковдра","комп'ютер","курка","куртка","кухня","ложка","лікарня","мама","масло","машина","медсестра","медсестра допомагає мені почуватися краще","мені потрібен телефон","мені потрібна ванна кімната","мені потрібна медсестра","мені потрібне свіже повітря","мені потрібно відпочити у своєму ліжку","мені потрібні черевики","мені потрібні черевики, перш ніж ми підемо надвір","мені сьогодні потрібно зайти до аптеки","мені сьогодні сумно","мені сьогодні холодно","молоко","музика","міст","ніжний","обід","олівець","пальто","пам'ять","папір","парк","планшет","повільний","подзвоніть моїй сім'ї","подушка","полуниця","помідор","потяг","радіо","риба","рис","рукавички","рух","сад","светр","сестра","сильний","сир","сніданок","сорочка","спокійний","станція","стіл","стілець","сукня","суп","сьогодні я почуваюся сильнішим і спокійнішим","сік","таксі","танець","тато","телевізор","терапія","тихий","турбота","у мене болить нога","у мене болить рука","увага","усмішка","учитель допоможе мені прочитати цю книгу","хлопець","хліб","ходімо надвір","ходіть зі мною","чай","черевики","чи можете відкрити вікно для мене?","чи можете допомогти мені одягнутися до школи?","чи можете почекати тут зі мною хвилинку?","чи можете принести мені склянку молока?","шапка","шарф","швидкий","шкарпетки","школа","штани","я відчуваю біль у лівій нозі","я готовий зараз іти додому","я дуже втомився","я зараз щасливий","я не можу знайти телефон і сумку","я радий бачити друга сьогодні","я хотів би молока","я хотів би подзвонити дочці","я хотів би сидіти біля вікна","я хотів би супу і хліба, будь ласка","я хотів би сьогодні їхати автобусом","я хотів би хліба","я хочу води","я хочу побачити лікаря сьогодні вранці","я хочу спати","я хочу суп","я хочу чаю","яблуко"]};
+for(const lc of Object.keys(EXTRA_WORD_DICT)){WORD_DICT[lc]=[...new Set([...(WORD_DICT[lc]||[]),...EXTRA_WORD_DICT[lc]])];}
+
+
+// ══════════ STATE ══════════
+let difficulty='easy',currentIndex=0,currentList=[];
+let favorites=JSON.parse(localStorage.getItem('sa3_favs')||'[]');
+let stats=JSON.parse(localStorage.getItem('sa3_stats')||'{"practiced":0,"listened":0,"sessions":1,"puzzles":0,"built":0}');
+let selectedCategory=null,voices=[],selectedVoice=null,speed=0.8,ttsProvider=localStorage.getItem('sa3_tts_provider')||'browser',googleTtsEndpoint=localStorage.getItem('sa3_google_tts_endpoint')||'';
+let puzzleGrid=3,puzzleImage=null,puzzlePieces=[],puzzleSelectedIndex=-1,puzzleMoves=0,puzzleTimerInterval=null,puzzleSeconds=0,croppedCanvas=null;
+let alphabetMode=lang;
+let puzzleGallery=JSON.parse(localStorage.getItem('sa3_puzzle_gallery')||'[]');
+
+// ══════════ INIT ══════════
+window.speechSynthesis.onvoiceschanged=loadVoices;
+// Chrome sometimes needs multiple pokes to load voices
+setTimeout(loadVoices,100);
+setTimeout(loadVoices,500);
+setTimeout(loadVoices,1500);
+
+
+function syncTtsUi(){
+  const sel=document.getElementById('ttsProviderSelect');
+  if(sel)sel.value=ttsProvider;
+  updateVoiceHint();
+}
+function setTtsProvider(v){
+  ttsProvider=v;
+  localStorage.setItem('sa3_tts_provider',v);
+  syncTtsUi();
+}
+function loadVoices(){
+  var all=window.speechSynthesis.getVoices();
+  var isUkNative=function(v){return /^uk/i.test(v.lang)||/ukrain/i.test(v.name)};
+  var ukVoices=all.filter(isUkNative);
+  if(ukVoices.length){
+    voices=ukVoices;
+    ukVoiceQuality='native';
+  } else {
+    voices=[];
+    ukVoiceQuality='none';
+  }
+  var s=document.getElementById('voiceSelect');s.innerHTML='';
+  if(!voices.length){
+    var o=document.createElement('option');o.value='';
+    o.textContent=navigator.onLine?'Автоматичний голос (Google)':'Встановіть укр. голос у налаштуваннях';
+    s.appendChild(o);selectedVoice=null;updateVoiceHint();return;
+  }
+  voices.forEach(function(v,i){var o=document.createElement('option');o.value=i;o.textContent=v.name+' ✓';s.appendChild(o)});
+  s.value=0;updateVoice();updateVoiceHint();
+}
+var ukVoiceQuality='none';
+function updateVoice(){selectedVoice=voices[document.getElementById('voiceSelect').value]||null;updateVoiceHint()}
+function updateVoiceHint(){
+  var note=document.getElementById('ttsNote');if(!note)return;
+  if(ukVoiceQuality==='native') note.textContent='✓ Українська мова — голос встановлено';
+  else if(navigator.onLine) note.textContent='✓ Українська мова (Google, онлайн)';
+  else note.textContent='⚠ Офлайн — встановіть голос: Налаштування → Мовлення → Українська';
+}
+function updateSpeed(){speed=parseFloat(document.getElementById('speedRange').value);document.getElementById('speedVal').textContent=speed.toFixed(1)+'×'}
+
+// ══════════ SPEECH ══════════
+
+// Check if we have a REAL Ukrainian browser voice
+function hasNativeUkVoice(){
+  const all=window.speechSynthesis.getVoices();
+  return all.some(v=>/^uk/i.test(v.lang)||/ukrain/i.test(v.name));
+}
+
+// Google Translate TTS — free, no API key needed, real Ukrainian voice
+function playGoogleTranslateTTS(text, langCode, rate){
+  return new Promise(function(resolve){
+    var fellBack=false;
+    function doFallback(){
+      if(fellBack)return;
+      fellBack=true;
+      speakBrowser(text, rate, false);
+      resolve();
+    }
+    var chunks=[];
+    if(text.length>190){
+      var words=text.split(' ');
+      var chunk='';
+      words.forEach(function(w){
+        if((chunk+' '+w).length>190){chunks.push(chunk.trim());chunk=w;}
+        else chunk+=(chunk?' ':'')+w;
+      });
+      if(chunk)chunks.push(chunk.trim());
+    } else {
+      chunks.push(text);
+    }
+    var idx=0;
+    function playNext(){
+      if(idx>=chunks.length){resolve();return;}
+      var t=encodeURIComponent(chunks[idx]);
+      var url='https://translate.google.com/translate_tts?ie=UTF-8&tl='+langCode+'&client=tw-ob&q='+t;
+      var audio=new Audio();
+      audio.crossOrigin='anonymous';
+      audio.src=url;
+      audio.onended=function(){idx++;playNext()};
+      audio.onerror=function(){doFallback()};
+      var p=audio.play();
+      if(p&&p.catch) p.catch(function(){doFallback()});
+    }
+    playNext();
+  });
+}
+
+// Custom Google Cloud endpoint (if user set one)
+async function playViaGoogleCloud(text,rate){
+  if(!googleTtsEndpoint){
+    // Fallback to Google Translate TTS
+    return playGoogleTranslateTTS(text, lang==='uk'?'uk':'en', rate);
+  }
+  const res=await fetch(googleTtsEndpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,lang:lang==='uk'?'uk-UA':'en-US',rate:rate||speed})});
+  if(!res.ok)throw new Error('TTS request failed');
+  const blob=await res.blob();
+  const audio=new Audio(URL.createObjectURL(blob));
+  await audio.play();
+  audio.onended=()=>URL.revokeObjectURL(audio.src);
+  return true;
+}
+
+function speakBrowser(text,rate,withMainButton=false){
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='uk-UA';
+  u.rate=rate||speed;
+  u.pitch=1;
+  if(selectedVoice){
+    u.voice=selectedVoice;
+  } else {
+    var allVoices=window.speechSynthesis.getVoices();
+    // ONLY use Ukrainian voice — never Russian, never Polish
+    var ukVoice=allVoices.find(function(vv){return /^uk/i.test(vv.lang)||/ukrain/i.test(vv.name)});
+    if(ukVoice) u.voice=ukVoice;
+    // If no Ukrainian voice found, don't set any voice — just use lang='uk-UA' hint
+  }
+  const btn=document.getElementById('speakBtn');
+  if(withMainButton&&btn)btn.classList.add('speaking');
+  u.onend=()=>{if(withMainButton&&btn)btn.classList.remove('speaking')};
+  u.onerror=(e)=>{console.warn('Speech error:',e);if(withMainButton&&btn)btn.classList.remove('speaking')};
+  setTimeout(()=>window.speechSynthesis.speak(u),50);
+  return true;
+}
+
+// Smart speak — OFFLINE FIRST, then try Google TTS as enhancement
+async function smartSpeak(text, rate, withMainButton){
+  var btn=withMainButton?document.getElementById('speakBtn'):null;
+  if(btn)btn.classList.add('speaking');
+  try{
+    // Custom Google Cloud endpoint (user configured)
+    if(ttsProvider==='google'){
+      await playViaGoogleCloud(text,rate);
+    }
+    // Ukrainian without native voice + online → try Google Translate TTS
+    else if(lang==='uk' && !hasNativeUkVoice() && navigator.onLine){
+      await playGoogleTranslateTTS(text,'uk',rate||speed);
+    }
+    // Default: browser speechSynthesis (works offline!)
+    else {
+      speakBrowser(text,rate,false);
+    }
+    stats.listened++;saveStats();updateStats();
+  }catch(err){
+    console.warn('Speech error:',err);
+    stats.listened++;saveStats();updateStats();
+  }finally{
+    if(btn)setTimeout(function(){btn.classList.remove('speaking')},500);
+  }
+}
+
+async function speak(text,rate){ return smartSpeak(text,rate,true); }
+async function speakAny(text){ return smartSpeak(text,speed,false); }
+function speakCurrent(){const it=currentList[currentIndex];if(it)speak(it.word)}
+function speakSlow(){const it=currentList[currentIndex];if(it)speak(it.word,Math.max(.3,speed-.3))}
+
+// ══════════ PRACTICE NAV ══════════
+function setDifficulty(d){difficulty=d;currentIndex=0;document.querySelectorAll('.diff-btn').forEach(b=>b.className='diff-btn');document.getElementById('diff-'+d).classList.add('active-'+d);filterList();updateCard()}
+function filterList(){const s=DATA[lang]||DATA.en;let l=[...(s[difficulty]||[])];if(selectedCategory)l=l.filter(w=>w.category===selectedCategory);currentList=l;if(currentIndex>=currentList.length)currentIndex=0}
+function nextWord(){if(!currentList.length)return;currentIndex=(currentIndex+1)%currentList.length;stats.practiced++;saveStats();updateCard();const c=document.getElementById('wordCard');c.classList.remove('flash');void c.offsetWidth;c.classList.add('flash')}
+function prevWord(){if(!currentList.length)return;currentIndex=(currentIndex-1+currentList.length)%currentList.length;updateCard()}
+function updateCard(){if(!currentList.length){document.getElementById('mainWord').textContent=I18N[lang].no_words;document.getElementById('phonetic').textContent='';document.getElementById('hint').textContent=I18N[lang].try_other;document.getElementById('catBadge').textContent='—';return}
+const it=currentList[currentIndex];document.getElementById('mainWord').textContent=it.word;document.getElementById('phonetic').textContent=it.phonetic;document.getElementById('hint').textContent=it.hint;document.getElementById('catBadge').textContent=it.category;
+const isFav=favorites.some(f=>f.word===it.word&&f.lang===lang);document.getElementById('favStar').classList.toggle('active',isFav);
+const pct=((currentIndex+1)/currentList.length*100).toFixed(0);document.getElementById('progressFill').style.width=pct+'%';document.getElementById('progressCount').textContent=(currentIndex+1)+'/'+currentList.length;
+const card=document.getElementById('wordCard');card.style.animation='none';void card.offsetWidth;card.style.animation='';updateStats()}
+
+// ══════════ FAVORITES ══════════
+function toggleFavorite(){const it=currentList[currentIndex];if(!it)return;const idx=favorites.findIndex(f=>f.word===it.word&&f.lang===lang);if(idx>=0)favorites.splice(idx,1);else favorites.push({...it,lang,difficulty});localStorage.setItem('sa3_favs',JSON.stringify(favorites));document.getElementById('favStar').classList.toggle('active',idx<0);updateStats()}
+function renderFavorites(){const el=document.getElementById('favList');const lf=favorites.filter(f=>f.lang===lang);if(!lf.length){el.innerHTML='<div style="text-align:center;padding:36px;color:var(--txt-l);font-size:16px;white-space:pre-line">'+I18N[lang].fav_empty+'</div>';return}
+el.innerHTML=lf.map(f=>{const w=f.word.replace(/'/g,"\\'");return`<div class="word-card" style="padding:16px 20px;margin-bottom:8px;text-align:left;display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="speakAny('${w}')"><div><div style="font-size:20px;font-weight:800;font-family:Quicksand">${f.word}</div><div style="font-size:12px;color:var(--txt-l)">${f.category||''}</div></div><button class="sr-speak" onclick="event.stopPropagation();speakAny('${w}')">🔊</button></div>`}).join('')}
+function removeFav(i){favorites.splice(i,1);localStorage.setItem('sa3_favs',JSON.stringify(favorites));renderFavorites();updateStats()}
+
+// ══════════ CATEGORIES ══════════
+function renderCategories(){const icEN={Greetings:'👋',Body:'🦴',Needs:'🆘',Feelings:'💗',Home:'🏠',Places:'📍',Time:'⏰',People:'👥',Daily:'☀️'};const icUK={"Вітання":'👋',"Тіло":'🦴',"Потреби":'🆘',"Почуття":'💗',"Дім":'🏠',"Місця":'📍',"Час":'⏰',"Люди":'👥',"Щодня":'☀️'};const icons=lang==='uk'?icUK:icEN;const src=DATA[lang]||DATA.en;const cats=new Set();Object.values(src).forEach(l=>l.forEach(w=>cats.add(w.category)));const g=document.getElementById('catGrid');let h=`<div class="cat-card ${!selectedCategory?'selected':''}" onclick="selectCategory(null)"><span class="cat-icon">📚</span><div class="cat-info"><h3>${I18N[lang].cat_all}</h3><span>${I18N[lang].cat_all_sub}</span></div></div>`;cats.forEach(c=>{const n=Object.values(src).flat().filter(w=>w.category===c).length;h+=`<div class="cat-card ${selectedCategory===c?'selected':''}" onclick="selectCategory('${c}')"><span class="cat-icon">${icons[c]||'📁'}</span><div class="cat-info"><h3>${c}</h3><span>${n}</span></div></div>`});g.innerHTML=h}
+function selectCategory(c){selectedCategory=c;currentIndex=0;filterList();updateCard();renderCategories();showPage('practice')}
+
+// ══════════ STATS ══════════
+function saveStats(){localStorage.setItem('sa3_stats',JSON.stringify(stats))}
+function updateStats(){document.getElementById('statPracticed').textContent=stats.practiced;document.getElementById('statListened').textContent=stats.listened;document.getElementById('statSessions').textContent=stats.sessions;document.getElementById('statFavs').textContent=favorites.length;document.getElementById('statPuzzles').textContent=stats.puzzles||0;document.getElementById('statBuilt').textContent=stats.built||0}
+
+// ══════════ MENU TOGGLE ══════════
+function toggleMenu(){
+  var menu=document.getElementById('navMenu');
+  var btn=document.getElementById('menuToggle');
+  menu.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+
+// ══════════ PAGE NAV ══════════
+function showPage(name){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+name).classList.add('active');
+var tabs=['practice','mouth','breathing','alphabet','constructor','categories','puzzle','memory','crossword','journal','favorites','stats'];var idx=tabs.indexOf(name);
+document.querySelectorAll('.nav-pill').forEach(function(p,i){p.classList.toggle('active',i===idx)});
+document.getElementById('navMenu').classList.remove('open');
+document.getElementById('menuToggle').classList.remove('open');
+if(name==='alphabet')renderAlphabet();
+if(name==='constructor'){initConstructor();}
+if(name==='puzzle')renderPuzzleGallery();
+if(name==='memory')initMemoryGame();
+if(name==='crossword')initCrossword();
+if(name==='mouth')renderMouthExercises();
+if(name==='breathing')renderBreathingTips();
+if(name==='journal')renderJournalHistory();
+if(name==='favorites')renderFavorites();
+if(name==='stats')updateStats()}
+
+// ══════════ GLOBAL SEARCH ══════════
+function getAllWords(){const src=DATA[lang]||DATA.en;return Object.values(src).flat()}
+function onGlobalSearch(){
+  const q=document.getElementById('globalSearch').value.trim().toLowerCase();
+  const box=document.getElementById('searchResults');
+  if(!q){box.classList.remove('open');return}
+  // search in practice words + dictionary
+  const practiceWords=getAllWords().filter(w=>w.word.toLowerCase().includes(q));
+  const dictWords=(WORD_DICT[lang]||[]).filter(w=>w.includes(q)&&!practiceWords.find(p=>p.word.toLowerCase()===w));
+  let html='';
+  practiceWords.slice(0,8).forEach(w=>{
+    const ew=w.word.replace(/'/g,"\\'");
+    html+=`<div class="sr-item" onclick="speakAny('${ew}')"><div><span class="sr-word">${highlight(w.word,q)}</span><br><span class="sr-cat">${w.category} · ${w.phonetic}</span></div><button class="sr-speak" onclick="event.stopPropagation();speakAny('${ew}')">🔊</button></div>`;
+  });
+  dictWords.slice(0,8).forEach(w=>{
+    const ew=w.replace(/'/g,"\\'");
+    html+=`<div class="sr-item" onclick="speakAny('${ew}')"><div><span class="sr-word">${highlight(w,q)}</span><br><span class="sr-cat">dictionary</span></div><button class="sr-speak" onclick="event.stopPropagation();speakAny('${ew}')">🔊</button></div>`;
+  });
+  if(!html)html='<div class="sr-item"><span class="sr-word" style="color:var(--txt-l)">No results</span></div>';
+  box.innerHTML=html;box.classList.add('open');
+}
+function highlight(text,q){const i=text.toLowerCase().indexOf(q);if(i<0)return text;return text.slice(0,i)+'<b style="color:var(--pri)">'+text.slice(i,i+q.length)+'</b>'+text.slice(i+q.length)}
+
+// ══════════════════════════════
+// ══════════ ALPHABET ═════════
+// ══════════════════════════════
+const EN_ALPHA=[
+{big:"A",small:"a",name:"A"},{big:"B",small:"b",name:"B"},{big:"C",small:"c",name:"C"},{big:"D",small:"d",name:"D"},{big:"E",small:"e",name:"E"},{big:"F",small:"f",name:"F"},{big:"G",small:"g",name:"G"},{big:"H",small:"h",name:"H"},{big:"I",small:"i",name:"I"},{big:"J",small:"j",name:"J"},{big:"K",small:"k",name:"K"},{big:"L",small:"l",name:"L"},{big:"M",small:"m",name:"M"},{big:"N",small:"n",name:"N"},{big:"O",small:"o",name:"O"},{big:"P",small:"p",name:"P"},{big:"Q",small:"q",name:"Q"},{big:"R",small:"r",name:"R"},{big:"S",small:"s",name:"S"},{big:"T",small:"t",name:"T"},{big:"U",small:"u",name:"U"},{big:"V",small:"v",name:"V"},{big:"W",small:"w",name:"W"},{big:"X",small:"x",name:"X"},{big:"Y",small:"y",name:"Y"},{big:"Z",small:"z",name:"Z"}
+];
+const UA_ALPHA=[
+{big:"А",small:"а",name:"а"},{big:"Б",small:"б",name:"бе"},{big:"В",small:"в",name:"ве"},
+{big:"Г",small:"г",name:"ге"},{big:"Ґ",small:"ґ",name:"ґе"},{big:"Д",small:"д",name:"де"},
+{big:"Е",small:"е",name:"е"},{big:"Є",small:"є",name:"є"},{big:"Ж",small:"ж",name:"же"},
+{big:"З",small:"з",name:"зе"},{big:"И",small:"и",name:"и"},{big:"І",small:"і",name:"і"},
+{big:"Ї",small:"ї",name:"ї"},{big:"Й",small:"й",name:"йот"},{big:"К",small:"к",name:"ка"},
+{big:"Л",small:"л",name:"ел"},{big:"М",small:"м",name:"ем"},{big:"Н",small:"н",name:"ен"},
+{big:"О",small:"о",name:"о"},{big:"П",small:"п",name:"пе"},{big:"Р",small:"р",name:"ер"},
+{big:"С",small:"с",name:"ес"},{big:"Т",small:"т",name:"те"},{big:"У",small:"у",name:"у"},
+{big:"Ф",small:"ф",name:"еф"},{big:"Х",small:"х",name:"ха"},{big:"Ц",small:"ц",name:"це"},
+{big:"Ч",small:"ч",name:"че"},{big:"Ш",small:"ш",name:"ша"},{big:"Щ",small:"щ",name:"ща"},
+{big:"Ь",small:"ь",name:"м'який знак"},{big:"Ю",small:"ю",name:"ю"},{big:"Я",small:"я",name:"я"}
+];
+
+function setAlphabetMode(mode){
+  alphabetMode=mode;
+  const enBtn=document.getElementById('alphaLangBtn-en');
+  const ukBtn=document.getElementById('alphaLangBtn-uk');
+  if(enBtn)enBtn.classList.toggle('active',mode==='en');
+  if(ukBtn)ukBtn.classList.toggle('active',mode==='uk');
+  renderAlphabet();
+}
+
+function renderAlphabet(){
+  const g=document.getElementById('alphaGrid');
+  const source=alphabetMode==='uk'?UA_ALPHA:EN_ALPHA;
+  g.innerHTML=source.map((l,i)=>`<div class="alpha-card" id="ac${i}" onclick="playLetter(${i})"><div class="al-big">${l.big}</div><div class="al-small">${l.small}</div><div class="al-name">${l.name}</div></div>`).join('');
+  const enBtn=document.getElementById('alphaLangBtn-en');
+  const ukBtn=document.getElementById('alphaLangBtn-uk');
+  if(enBtn)enBtn.classList.toggle('active',alphabetMode==='en');
+  if(ukBtn)ukBtn.classList.toggle('active',alphabetMode==='uk');
+}
+
+async function playLetter(i){
+  const source=alphabetMode==='uk'?UA_ALPHA:EN_ALPHA;
+  const l=source[i];if(!l)return;
+  // Temporarily switch lang if alphabet mode differs
+  const origLang=lang;
+  lang=alphabetMode;
+  try{ await speakAny(l.name); } finally { lang=origLang; }
+  const card=document.getElementById('ac'+i);
+  if(card){card.classList.add('playing');setTimeout(()=>card.classList.remove('playing'),800);}
+}
+
+// ══════════════════════════════════
+// ══════════ SENTENCE BUILDER ═════
+// ══════════════════════════════════
+
+// Word blocks organized by category for sentence construction
+const SENTENCE_BLOCKS={
+en:{
+  "I/You":["I","you","we","he","she","they","my","your","me","it"],
+  "Verbs":["want","need","feel","am","have","like","love","can","help","go","come","take","give","open","close","call","sit","stand","walk","eat","drink","sleep","read","write","see","hear","bring","put","turn"],
+  "Things":["water","food","tea","soup","bread","milk","medicine","phone","bag","book","coat","shoes","chair","table","bed","door","window","light","pillow","blanket","glass","plate","cup","key"],
+  "Places":["home","hospital","park","school","pharmacy","bathroom","kitchen","room","outside","here","there","garden"],
+  "People":["doctor","nurse","family","friend","mother","father","sister","brother","daughter","son","baby","teacher"],
+  "Feelings":["good","bad","happy","sad","tired","hungry","thirsty","cold","hot","better","pain","strong","okay","scared","calm"],
+  "Other":["please","thank you","yes","no","now","today","tomorrow","morning","night","more","very","the","a","to","in","on","for","with","is","not","and","but","or","this","that"]
+},
+uk:{
+  "Я/Ти":["я","ти","ми","він","вона","вони","мій","мені","твій","мене","це"],
+  "Дії":["хочу","потрібно","почуваю","маю","люблю","можу","допоможіть","йти","прийти","взяти","дати","відкрити","закрити","подзвонити","сидіти","стояти","ходити","їсти","пити","спати","читати","писати","бачити","чути","принести","покласти","увімкнути","вимкнути"],
+  "Речі":["воду","їжу","чай","суп","хліб","молоко","ліки","телефон","сумку","книгу","пальто","черевики","стілець","стіл","ліжко","двері","вікно","світло","подушку","ковдру","склянку","тарілку","чашку","ключ"],
+  "Місця":["додому","до лікарні","до парку","до школи","до аптеки","до ванної","на кухню","в кімнату","надвір","тут","там","в саду"],
+  "Люди":["лікаря","медсестру","сім'ю","друга","маму","тата","сестру","брата","дочку","сина","дитину","вчителя"],
+  "Почуття":["добре","погано","щасливий","сумний","втомлений","голодний","хочу пити","холодно","гаряче","краще","біль","сильний","нормально","спокійний"],
+  "Інше":["будь ласка","дякую","так","ні","зараз","сьогодні","завтра","вранці","вночі","більше","дуже","не","і","але","або","цей","той","мене","мені","до","в","на","для","з"]
+}};
+
+let sentenceWords=[]; // array of words in current sentence
+let blockCatFilter=null;
+
+function renderBlockCategories(){
+  const bar=document.getElementById('blockCatBar');
+  const cats=Object.keys(SENTENCE_BLOCKS[lang]||SENTENCE_BLOCKS.en);
+  const allLabel=lang==='uk'?'Всі':'All';
+  bar.innerHTML=`<button class="block-cat-btn ${!blockCatFilter?'active':''}" onclick="setBlockCat(null)">${allLabel}</button>`+
+    cats.map(c=>`<button class="block-cat-btn ${blockCatFilter===c?'active':''}" onclick="setBlockCat('${c}')">${c}</button>`).join('');
+}
+
+function setBlockCat(cat){blockCatFilter=cat;renderBlockCategories();renderWordBlocks()}
+
+function renderWordBlocks(){
+  const grid=document.getElementById('wordBlocksGrid');
+  const src=SENTENCE_BLOCKS[lang]||SENTENCE_BLOCKS.en;
+  let words=[];
+  if(blockCatFilter&&src[blockCatFilter]){
+    words=src[blockCatFilter].map(w=>({word:w,cat:blockCatFilter}));
+  }else{
+    Object.entries(src).forEach(([cat,ws])=>ws.forEach(w=>words.push({word:w,cat})));
+  }
+  const catColors={"I/You":"#4A90D9","Verbs":"#48BB78","Things":"#F6AD55","Places":"#9F7AEA","People":"#FC8181","Feelings":"#ED64A6","Other":"#718096",
+    "Я/Ти":"#4A90D9","Дії":"#48BB78","Речі":"#F6AD55","Місця":"#9F7AEA","Люди":"#FC8181","Почуття":"#ED64A6","Інше":"#718096"};
+  grid.innerHTML=words.map(({word,cat})=>{
+    const ew=word.replace(/'/g,"\\'");
+    const col=catColors[cat]||'#718096';
+    return `<div class="word-block" style="border-left:4px solid ${col}" onclick="addWordToSentence('${ew}')">
+      <div class="wb-word">${word}</div>
+    </div>`;
+  }).join('');
+}
+
+function addWordToSentence(word){
+  sentenceWords.push(word);
+  renderSentenceDisplay();
+  renderWordBlocks();
+  // Auto-speak the added word
+  speakAny(word);
+}
+
+function removeWordFromSentence(idx){
+  sentenceWords.splice(idx,1);
+  renderSentenceDisplay();
+  renderWordBlocks();
+}
+
+function undoSentence(){
+  if(sentenceWords.length) sentenceWords.pop();
+  renderSentenceDisplay();
+  renderWordBlocks();
+}
+
+function clearSentence(){
+  sentenceWords=[];
+  typingWord='';
+  renderSentenceDisplay();
+  renderWordBlocks();
+}
+
+function renderSentenceDisplay(){
+  const d=document.getElementById('sentenceDisplay');
+  const hasContent=sentenceWords.length||typingWord;
+  if(!hasContent){
+    d.innerHTML=`<span class="sent-placeholder">${I18N[lang].constr_placeholder}</span>`;
+    return;
+  }
+  let html=sentenceWords.map((w,i)=>
+    `<div class="sent-word" onclick="removeWordFromSentence(${i})">${w}<span class="sw-remove">✕</span></div>`
+  ).join('');
+  // Show currently-typing word with a blinking cursor effect
+  if(typingWord){
+    html+=`<div class="sent-word" style="border-color:var(--acc);color:var(--acc);border-style:dashed">${typingWord}<span style="animation:blink 1s infinite">|</span></div>`;
+  }
+  d.innerHTML=html;
+}
+
+function speakSentence(){
+  if(typingWord.trim()){finishTypingWord(true);}
+  const text=sentenceWords.join(' ');
+  if(!text.trim())return;
+  speakAny(text);
+  stats.built=(stats.built||0)+1;saveStats();updateStats();
+}
+
+function initConstructor(){
+  blockCatFilter=null;
+  renderBlockCategories();
+  renderWordBlocks();
+  renderSentenceDisplay();
+  renderConstructorLetters();
+}
+
+// ── Constructor mode toggle ──
+let constructorMode='words';
+function setConstructorMode(mode){
+  constructorMode=mode;
+  document.getElementById('modeWords').classList.toggle('active',mode==='words');
+  document.getElementById('modeLetters').classList.toggle('active',mode==='letters');
+  document.getElementById('constructorWordsSection').style.display=mode==='words'?'':'none';
+  document.getElementById('constructorLettersSection').style.display=mode==='letters'?'':'none';
+}
+
+// ── Letter keyboard for typing custom words ──
+let typingWord=''; // current word being typed letter by letter
+
+function renderConstructorLetters(){
+  const grid=document.getElementById('constrLetterGrid');
+  const letters=lang==='uk'
+    ? UA_ALPHA.map(l=>l.small).concat(["'"])
+    : 'abcdefghijklmnopqrstuvwxyz'.split('');
+  grid.innerHTML=letters.map(ch=>{
+    const eCh=encodeURIComponent(ch);
+    return `<div class="constr-letter" onclick="addTypingLetter(decodeURIComponent('${eCh}'))">
+      <div class="cl-char">${ch}</div>
+    </div>`;
+  }).join('') + `<div class="constr-letter constr-special" style="background:#D4EDDA;border-color:var(--ok)" onclick="finishTypingWord()">
+    <div class="cl-char" style="font-size:20px;color:var(--ok)">✓</div>
+    <div class="cl-label" style="color:#22543D">${lang==='uk'?'Додати':'Add'}</div>
+  </div>` + `<div class="constr-letter constr-special" style="background:#FDE8E8;border-color:var(--danger)" onclick="clearTypingWord()">
+    <div class="cl-char" style="font-size:26px;color:var(--danger)">⌫</div>
+    <div class="cl-label" style="color:#C53030">${lang==='uk'?'Стерти':'Delete'}</div>
+  </div>` + `<div class="constr-letter constr-space" style="background:#DBEAFE;border-color:var(--pri)" onclick="addTypingLetter(' ');finishTypingWord()">
+    <div class="cl-char" style="font-size:18px;color:var(--pri-d)">⎵ ${lang==='uk'?'Пробіл':'Space'}</div>
+  </div>`;
+}
+
+function addTypingLetter(ch){
+  typingWord+=ch;
+  renderSentenceDisplay();
+}
+
+function clearTypingWord(){
+  if(typingWord.length) typingWord=typingWord.slice(0,-1);
+  else if(sentenceWords.length) sentenceWords.pop();
+  renderSentenceDisplay();
+}
+
+function finishTypingWord(silent){
+  if(typingWord.trim()){
+    sentenceWords.push(typingWord.trim());
+    if(!silent) speakAny(typingWord.trim());
+    typingWord='';
+    renderSentenceDisplay();
+    renderWordBlocks();
+    stats.built=(stats.built||0)+1;saveStats();updateStats();
+  }
+}
+
+// ══════════════════════════════
+// ══════════ PUZZLE ═══════════
+// ══════════════════════════════
+function renderSampleImages(){const samples=[{key:'sun',colors:['#FF6B35','#FFB347','#FFE066','#4ECDC4','#2C3E50'],label:I18N[lang].sample_sun},{key:'mtn',colors:['#2C3E50','#3498DB','#1ABC9C','#27AE60','#F1C40F'],label:I18N[lang].sample_mtn},{key:'sea',colors:['#0077B6','#00B4D8','#90E0EF','#CAF0F8','#FFE066'],label:I18N[lang].sample_sea},{key:'flower',colors:['#E91E63','#FF5722','#FF9800','#4CAF50','#8BC34A'],label:I18N[lang].sample_flower},{key:'forest',colors:['#1B5E20','#388E3C','#4CAF50','#8BC34A','#795548'],label:I18N[lang].sample_forest},{key:'sky',colors:['#1A237E','#283593','#5C6BC0','#FF8A65','#FFE082'],label:I18N[lang].sample_sky}];const c=document.getElementById('sampleImages');c.innerHTML='';samples.forEach(s=>{const d=document.createElement('div');d.className='sample-img';const cv=document.createElement('canvas');cv.width=300;cv.height=300;drawArt(cv.getContext('2d'),300,300,s.key,s.colors);d.appendChild(cv);const lb=document.createElement('div');lb.className='si-label';lb.textContent=s.label;d.appendChild(lb);d.onclick=()=>cv.toBlob(b=>{const r=new FileReader();r.onload=()=>{addImageToPuzzleGallery(r.result,s.label);startPuzzleWithImage(r.result)};r.readAsDataURL(b);});c.appendChild(d)})}
+function drawArt(x,w,h,k,C){const bg=x.createLinearGradient(0,0,w,h);bg.addColorStop(0,C[0]);bg.addColorStop(.5,C[1]);bg.addColorStop(1,C[2]);x.fillStyle=bg;x.fillRect(0,0,w,h);if(k==='sun'){x.fillStyle=C[3];x.fillRect(0,h*.7,w,h*.3);const g=x.createRadialGradient(w*.5,h*.45,20,w*.5,h*.45,120);g.addColorStop(0,'#FFF176');g.addColorStop(1,C[0]);x.fillStyle=g;x.beginPath();x.arc(w*.5,h*.45,80,0,Math.PI*2);x.fill();for(let i=0;i<12;i++){x.save();x.translate(w*.5,h*.45);x.rotate(i*Math.PI/6);x.fillStyle='rgba(255,241,118,.3)';x.fillRect(-4,-130,8,50);x.restore()}}else if(k==='mtn'){x.fillStyle=C[2];x.beginPath();x.moveTo(0,h);x.lineTo(w*.3,h*.25);x.lineTo(w*.6,h);x.fill();x.fillStyle=C[3];x.beginPath();x.moveTo(w*.4,h);x.lineTo(w*.7,h*.2);x.lineTo(w,h);x.fill();x.fillStyle='#fff';x.beginPath();x.moveTo(w*.65,h*.22);x.lineTo(w*.7,h*.2);x.lineTo(w*.75,h*.25);x.fill()}else if(k==='sea'){for(let y=h*.4;y<h;y+=30){x.fillStyle=`rgba(0,${100+y/3|0},${180+y/5|0},.5)`;x.beginPath();x.moveTo(0,y);for(let i=0;i<w;i+=40)x.quadraticCurveTo(i+20,y-15+Math.sin(i*.05)*10,i+40,y);x.lineTo(w,h);x.lineTo(0,h);x.fill()}x.fillStyle=C[4];x.beginPath();x.arc(w*.8,h*.15,40,0,Math.PI*2);x.fill()}else if(k==='flower'){x.strokeStyle=C[3];x.lineWidth=6;x.beginPath();x.moveTo(w*.5,h*.55);x.lineTo(w*.5,h*.9);x.stroke();for(let i=0;i<6;i++){x.save();x.translate(w*.5,h*.42);x.rotate(i*Math.PI/3);x.fillStyle=i%2?C[0]:C[1];x.beginPath();x.ellipse(0,-40,22,40,0,0,Math.PI*2);x.fill();x.restore()}x.fillStyle=C[2];x.beginPath();x.arc(w*.5,h*.42,18,0,Math.PI*2);x.fill()}else if(k==='forest'){for(let i=0;i<7;i++){const tx=w*.1+i*w*.13,th=80+Math.random()*60;x.fillStyle=C[Math.floor(Math.random()*3)];x.beginPath();x.moveTo(tx-30,h*.85);x.lineTo(tx,h*.85-th);x.lineTo(tx+30,h*.85);x.fill();x.fillStyle=C[4];x.fillRect(tx-5,h*.85,10,h*.15)}x.fillStyle='#4E342E';x.fillRect(0,h*.9,w,h*.1)}else if(k==='sky'){for(let i=0;i<30;i++){x.fillStyle=`rgba(255,255,255,${.3+Math.random()*.7})`;x.beginPath();x.arc(Math.random()*w,Math.random()*h*.6,1+Math.random()*2,0,Math.PI*2);x.fill()}const glow=x.createLinearGradient(0,h*.5,0,h);glow.addColorStop(0,'transparent');glow.addColorStop(.5,C[3]);glow.addColorStop(1,C[4]);x.fillStyle=glow;x.fillRect(0,h*.5,w,h*.5)}}
+function savePuzzleGallery(){localStorage.setItem('sa3_puzzle_gallery',JSON.stringify(puzzleGallery.slice(0,12)))}
+function addImageToPuzzleGallery(dataUrl,label){
+  puzzleGallery=[{url:dataUrl,label:label||('Photo '+(puzzleGallery.length+1))},...puzzleGallery.filter(x=>x.url!==dataUrl)].slice(0,12);
+  savePuzzleGallery();
+  renderPuzzleGallery();
+}
+function removePuzzleGalleryItem(index){
+  puzzleGallery.splice(index,1);
+  savePuzzleGallery();
+  renderPuzzleGallery();
+}
+function renderPuzzleGallery(){
+  const wrap=document.getElementById('puzzleGallery');
+  if(!wrap) return;
+  if(!puzzleGallery.length){ wrap.innerHTML='<div style="color:var(--txt-l);font-size:14px;padding:8px 0">No uploaded images yet.</div>'; return; }
+  wrap.innerHTML=puzzleGallery.map((item,i)=>`<div class="gallery-item" onclick="startPuzzleWithImage('${item.url}')"><img src="${item.url}" alt="Puzzle image ${i+1}"><button class="gallery-remove" onclick="event.stopPropagation();removePuzzleGalleryItem(${i})">×</button><div class="si-label">${item.label||('Photo '+(i+1))}</div></div>`).join('');
+}
+function handlePuzzleFile(e){const f=e.target.files[0];if(!f)return;const reader=new FileReader();reader.onload=()=>{addImageToPuzzleGallery(reader.result,f.name||'Uploaded');startPuzzleWithImage(reader.result)};reader.readAsDataURL(f)}
+function setupDragDrop(){const a=document.getElementById('puzzleUploadArea');a.addEventListener('dragover',e=>{e.preventDefault();a.classList.add('dragover')});a.addEventListener('dragleave',()=>a.classList.remove('dragover'));a.addEventListener('drop',e=>{e.preventDefault();a.classList.remove('dragover');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/')){const reader=new FileReader();reader.onload=()=>{addImageToPuzzleGallery(reader.result,f.name||'Uploaded');startPuzzleWithImage(reader.result)};reader.readAsDataURL(f)}})}
+function startPuzzleWithImage(url){const img=new Image();img.onload=()=>{puzzleImage=img;const s=Math.min(img.naturalWidth,img.naturalHeight);const ox=(img.naturalWidth-s)/2,oy=(img.naturalHeight-s)/2;croppedCanvas=document.createElement('canvas');croppedCanvas.width=s;croppedCanvas.height=s;croppedCanvas.getContext('2d').drawImage(img,ox,oy,s,s,0,0,s,s);document.getElementById('puzzlePreviewImg').src=croppedCanvas.toDataURL();document.getElementById('puzzleUploadArea').style.display='none';document.getElementById('sampleImages').style.display='';document.getElementById('puzzleGallery').style.display='';document.getElementById('puzzleOrLabel').style.display='';document.getElementById('puzzleGameArea').style.display='block';initPuzzle()};img.onerror=()=>alert('Image failed to load.');img.src=url}
+function resetPuzzleUpload(){document.getElementById('puzzleUploadArea').style.display='';document.getElementById('sampleImages').style.display='';document.getElementById('puzzleGallery').style.display='';document.getElementById('puzzleOrLabel').style.display='';document.getElementById('puzzleGameArea').style.display='none';puzzleImage=null;croppedCanvas=null;clearInterval(puzzleTimerInterval);document.getElementById('puzzleFileInput').value='';renderPuzzleGallery()}
+function setPuzzleGrid(n){puzzleGrid=n;document.querySelectorAll('.grid-btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.g)===n));if(puzzleImage)initPuzzle()}
+function initPuzzle(){puzzleMoves=0;puzzleSeconds=0;puzzleSelectedIndex=-1;clearInterval(puzzleTimerInterval);document.getElementById('puzzleMoves').textContent='0';document.getElementById('puzzleTimer').textContent='0:00';const t=puzzleGrid*puzzleGrid;puzzlePieces=Array.from({length:t},(_,i)=>i);for(let i=t-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[puzzlePieces[i],puzzlePieces[j]]=[puzzlePieces[j],puzzlePieces[i]]}renderPuzzleBoard();startPuzzleTimer()}
+function shufflePuzzle(){initPuzzle()}
+function startPuzzleTimer(){clearInterval(puzzleTimerInterval);puzzleTimerInterval=setInterval(()=>{puzzleSeconds++;const m=Math.floor(puzzleSeconds/60),s=puzzleSeconds%60;document.getElementById('puzzleTimer').textContent=m+':'+(s<10?'0':'')+s},1000)}
+function renderPuzzleBoard(){const board=document.getElementById('puzzleBoard');board.style.gridTemplateColumns=`repeat(${puzzleGrid},1fr)`;board.innerHTML='';if(!croppedCanvas)return;const t=puzzleGrid*puzzleGrid,side=croppedCanvas.width,ps=side/puzzleGrid;for(let i=0;i<t;i++){const pi=puzzlePieces[i],sr=Math.floor(pi/puzzleGrid),sc=pi%puzzleGrid;const pc=document.createElement('canvas');pc.width=200;pc.height=200;const ctx=pc.getContext('2d');ctx.drawImage(croppedCanvas,sc*ps,sr*ps,ps,ps,0,0,200,200);ctx.fillStyle='rgba(0,0,0,.4)';ctx.beginPath();ctx.arc(20,20,13,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 12px Nunito';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(pi+1,20,21);const div=document.createElement('div');div.className='puzzle-piece';if(pi===i)div.classList.add('correct');div.style.backgroundImage=`url(${pc.toDataURL()})`;div.style.backgroundSize='cover';div.onclick=()=>handlePieceClick(i);board.appendChild(div)}updateCorrectCount()}
+function handlePieceClick(pos){const pieces=document.querySelectorAll('.puzzle-piece');if(puzzleSelectedIndex===-1){puzzleSelectedIndex=pos;pieces[pos].classList.add('selected')}else{if(puzzleSelectedIndex===pos){pieces[pos].classList.remove('selected');puzzleSelectedIndex=-1;return}[puzzlePieces[puzzleSelectedIndex],puzzlePieces[pos]]=[puzzlePieces[pos],puzzlePieces[puzzleSelectedIndex]];puzzleMoves++;document.getElementById('puzzleMoves').textContent=puzzleMoves;puzzleSelectedIndex=-1;renderPuzzleBoard();checkComplete()}}
+function updateCorrectCount(){let c=0;puzzlePieces.forEach((p,i)=>{if(p===i)c++});document.getElementById('puzzleCorrect').textContent=c+'/'+puzzlePieces.length}
+function checkComplete(){if(!puzzlePieces.every((p,i)=>p===i))return;clearInterval(puzzleTimerInterval);stats.puzzles=(stats.puzzles||0)+1;saveStats();updateStats();const m=Math.floor(puzzleSeconds/60),s=puzzleSeconds%60;const t=m+':'+(s<10?'0':'')+s;document.getElementById('puzzleCompleteMsg').textContent=I18N[lang].puzzle_done_msg.replace('{moves}',puzzleMoves).replace('{time}',t);setTimeout(()=>document.getElementById('puzzleCompleteOverlay').style.display='flex',400)}
+
+window.addEventListener('beforeunload',()=>{stats.sessions++;saveStats()});
+
+// Chrome bug fix: speechSynthesis sometimes freezes after ~15s.
+// Periodically resume it.
+setInterval(()=>{
+  if(window.speechSynthesis.speaking){window.speechSynthesis.pause();window.speechSynthesis.resume();}
+},10000);
+
+// ══════════════════════════════════
+// ══════════ MEMORY GAME ══════════
+// ══════════════════════════════════
+
+const MEMORY_WORDS={
+en:[
+  {word:"Hello",emoji:"👋"},{word:"Water",emoji:"💧"},{word:"Food",emoji:"🍎"},{word:"Home",emoji:"🏠"},
+  {word:"Family",emoji:"👨‍👩‍👧"},{word:"Doctor",emoji:"👩‍⚕️"},{word:"Bed",emoji:"🛏️"},{word:"Door",emoji:"🚪"},
+  {word:"Happy",emoji:"😊"},{word:"Sad",emoji:"😢"},{word:"Hot",emoji:"🔥"},{word:"Cold",emoji:"❄️"},
+  {word:"Eye",emoji:"👁️"},{word:"Hand",emoji:"✋"},{word:"Sun",emoji:"☀️"},{word:"Moon",emoji:"🌙"},
+  {word:"Dog",emoji:"🐕"},{word:"Cat",emoji:"🐈"},{word:"Book",emoji:"📖"},{word:"Phone",emoji:"📱"},
+  {word:"Car",emoji:"🚗"},{word:"Tree",emoji:"🌳"},{word:"Star",emoji:"⭐"},{word:"Heart",emoji:"❤️"}
+],
+uk:[
+  {word:"Привіт",emoji:"👋"},{word:"Вода",emoji:"💧"},{word:"Їжа",emoji:"🍎"},{word:"Дім",emoji:"🏠"},
+  {word:"Сім'я",emoji:"👨‍👩‍👧"},{word:"Лікар",emoji:"👩‍⚕️"},{word:"Ліжко",emoji:"🛏️"},{word:"Двері",emoji:"🚪"},
+  {word:"Щасливий",emoji:"😊"},{word:"Сумний",emoji:"😢"},{word:"Гаряче",emoji:"🔥"},{word:"Холодно",emoji:"❄️"},
+  {word:"Око",emoji:"👁️"},{word:"Рука",emoji:"✋"},{word:"Сонце",emoji:"☀️"},{word:"Місяць",emoji:"🌙"},
+  {word:"Собака",emoji:"🐕"},{word:"Кіт",emoji:"🐈"},{word:"Книга",emoji:"📖"},{word:"Телефон",emoji:"📱"},
+  {word:"Машина",emoji:"🚗"},{word:"Дерево",emoji:"🌳"},{word:"Зірка",emoji:"⭐"},{word:"Серце",emoji:"❤️"}
+]};
+
+let memGridSize=4, memCards=[], memFlipped=[], memMatched=[], memMoves=0, memTimerInt=null, memSeconds=0, memLocked=false;
+
+function setMemoryGrid(n){
+  memGridSize=n;
+  document.querySelectorAll('[data-mg]').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.mg)===n));
+  initMemoryGame();
+}
+
+function initMemoryGame(){
+  clearInterval(memTimerInt);
+  memMoves=0;memSeconds=0;memFlipped=[];memMatched=[];memLocked=false;
+  document.getElementById('memMoves').textContent='0';
+  document.getElementById('memTimer').textContent='0:00';
+  
+  const pairCount=memGridSize===6?12:6;
+  const cols=memGridSize===6?6:4;
+  const rows=memGridSize===6?4:3;
+  const src=(MEMORY_WORDS[lang]||MEMORY_WORDS.en).slice();
+  // Shuffle and pick
+  for(let i=src.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[src[i],src[j]]=[src[j],src[i]];}
+  const chosen=src.slice(0,pairCount);
+  
+  // Create pairs: one card shows emoji, the other shows word
+  memCards=[];
+  chosen.forEach((item,i)=>{
+    memCards.push({id:i,type:'emoji',emoji:item.emoji,word:item.word,pairId:i});
+    memCards.push({id:i,type:'word',emoji:item.emoji,word:item.word,pairId:i});
+  });
+  // Shuffle cards
+  for(let i=memCards.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[memCards[i],memCards[j]]=[memCards[j],memCards[i]];}
+  
+  const board=document.getElementById('memoryBoard');
+  board.style.gridTemplateColumns=`repeat(${cols},1fr)`;
+  board.innerHTML=memCards.map((c,idx)=>`
+    <div class="mem-card" id="mc${idx}" onclick="flipMemCard(${idx})">
+      <div class="mem-back">❓</div>
+      <div class="mem-face">
+        ${c.type==='emoji'?`<span class="mem-emoji">${c.emoji}</span>`:`<span class="mem-text">${c.word}</span>`}
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('memPairs').textContent='0/'+pairCount;
+  
+  memTimerInt=setInterval(()=>{
+    memSeconds++;
+    const m=Math.floor(memSeconds/60),s=memSeconds%60;
+    document.getElementById('memTimer').textContent=m+':'+(s<10?'0':'')+s;
+  },1000);
+}
+
+function flipMemCard(idx){
+  if(memLocked)return;
+  const card=document.getElementById('mc'+idx);
+  if(card.classList.contains('flipped')||card.classList.contains('matched'))return;
+  
+  card.classList.add('flipped','flipping');
+  // Speak the word
+  speakAny(memCards[idx].word);
+  memFlipped.push(idx);
+  
+  if(memFlipped.length===2){
+    memMoves++;
+    document.getElementById('memMoves').textContent=memMoves;
+    const [a,b]=memFlipped;
+    if(memCards[a].pairId===memCards[b].pairId){
+      // Match!
+      setTimeout(()=>{
+        document.getElementById('mc'+a).classList.add('matched');
+        document.getElementById('mc'+b).classList.add('matched');
+        memMatched.push(a,b);
+        const pairCount=memGridSize===6?12:6;
+        document.getElementById('memPairs').textContent=(memMatched.length/2)+'/'+pairCount;
+        if(memMatched.length===memCards.length){
+          clearInterval(memTimerInt);
+          stats.puzzles=(stats.puzzles||0)+1;saveStats();updateStats();
+          setTimeout(()=>alert(lang==='uk'?`Вітаємо! Завершено за ${memMoves} ходів!`:`Well done! Completed in ${memMoves} moves!`),300);
+        }
+      },500);
+    }else{
+      memLocked=true;
+      setTimeout(()=>{
+        document.getElementById('mc'+a).classList.remove('flipped');
+        document.getElementById('mc'+b).classList.remove('flipped');
+        memLocked=false;
+      },1200);
+    }
+    memFlipped=[];
+  }
+}
+
+// ══════════════════════════════════
+// ══════════ WORD FILL GAME ═══════
+// ══════════════════════════════════
+
+const CROSSWORD_WORDS={
+en:[
+  {word:"water",hint:"💧",desc:"Something to drink"},{word:"hello",hint:"👋",desc:"A greeting"},
+  {word:"family",hint:"👨‍👩‍👧",desc:"Your loved ones"},{word:"doctor",hint:"👩‍⚕️",desc:"Medical professional"},
+  {word:"happy",hint:"😊",desc:"Feeling good"},{word:"morning",hint:"🌅",desc:"Start of day"},
+  {word:"friend",hint:"🤝",desc:"Someone you like"},{word:"bread",hint:"🍞",desc:"Bakery food"},
+  {word:"window",hint:"🪟",desc:"See outside"},{word:"school",hint:"🏫",desc:"Place to learn"},
+  {word:"chair",hint:"🪑",desc:"You sit on it"},{word:"phone",hint:"📱",desc:"Call people"},
+  {word:"sleep",hint:"😴",desc:"Rest at night"},{word:"light",hint:"💡",desc:"Makes room bright"},
+  {word:"house",hint:"🏠",desc:"Where you live"},{word:"table",hint:"🍽️",desc:"Put things on it"}
+],
+uk:[
+  {word:"вода",hint:"💧",desc:"Щось для пиття"},{word:"привіт",hint:"👋",desc:"Вітання"},
+  {word:"сім'я",hint:"👨‍👩‍👧",desc:"Ваші рідні"},{word:"лікар",hint:"👩‍⚕️",desc:"Медичний працівник"},
+  {word:"щастя",hint:"😊",desc:"Добре почування"},{word:"ранок",hint:"🌅",desc:"Початок дня"},
+  {word:"друг",hint:"🤝",desc:"Приятель"},{word:"хліб",hint:"🍞",desc:"Їжа з пекарні"},
+  {word:"вікно",hint:"🪟",desc:"Дивимось надвір"},{word:"школа",hint:"🏫",desc:"Місце навчання"},
+  {word:"стілець",hint:"🪑",desc:"Сидимо на ньому"},{word:"телефон",hint:"📱",desc:"Дзвонимо людям"},
+  {word:"спати",hint:"😴",desc:"Відпочивати вночі"},{word:"світло",hint:"💡",desc:"Робить кімнату яскравою"},
+  {word:"дім",hint:"🏠",desc:"Де ви живете"},{word:"стіл",hint:"🍽️",desc:"Ставимо речі"}
+]};
+
+let crossIdx=0, crossOrder=[], crossRevealed=[], crossFocusedCell=null;
+
+function initCrossword(){
+  const words=CROSSWORD_WORDS[lang]||CROSSWORD_WORDS.en;
+  crossOrder=Array.from({length:words.length},(_,i)=>i);
+  for(let i=crossOrder.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[crossOrder[i],crossOrder[j]]=[crossOrder[j],crossOrder[i]];}
+  crossIdx=0;
+  renderCrosswordWord();
+}
+
+function renderCrosswordWord(){
+  const words=CROSSWORD_WORDS[lang]||CROSSWORD_WORDS.en;
+  if(crossIdx>=crossOrder.length)crossIdx=0;
+  const item=words[crossOrder[crossIdx]];
+  const w=item.word.replace(/'/g,'');
+  const letters=w.split('');
+  
+  const hideCount=Math.max(1,Math.ceil(letters.length*0.5));
+  let hideIndices=[];
+  const indices=letters.map((_,i)=>i);
+  for(let i=indices.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[indices[i],indices[j]]=[indices[j],indices[i]];}
+  hideIndices=indices.slice(0,hideCount);
+  crossRevealed=letters.map((_,i)=>!hideIndices.includes(i));
+  
+  // Build keyboard letters
+  const kbLetters=lang==='uk'
+    ? UA_ALPHA.map(l=>l.small)
+    : 'abcdefghijklmnopqrstuvwxyz'.split('');
+  
+  const area=document.getElementById('crosswordArea');
+  area.innerHTML=`
+    <div class="cross-score"><span class="cross-progress">${crossIdx+1} / ${words.length}</span></div>
+    <div class="cross-word-card">
+      <div class="cross-hint">${item.hint}</div>
+      <div class="cross-hint-text">${item.desc}</div>
+      <div class="cross-letters" id="crossLetters">
+        ${letters.map((ch,i)=>{
+          if(crossRevealed[i]){
+            return `<input class="cross-cell given" value="${ch}" readonly tabindex="-1">`;
+          }else{
+            return `<input class="cross-cell" maxlength="1" data-idx="${i}" data-answer="${ch}" oninput="crossCellInput(this)" onkeydown="crossCellKey(event,this)" onfocus="crossFocusedCell=this" readonly>`;
+          }
+        }).join('')}
+      </div>
+      <div class="cross-actions">
+        <button class="big-btn btn-speak" onclick="speakAny('${item.word.replace(/'/g,"\\'")}')"><span class="btn-icon">🔊</span> ${I18N[lang].btn_listen}</button>
+        <button class="big-btn btn-next" onclick="checkCrossword()">✅ ${I18N[lang].cross_check||'Check'}</button>
+        <button class="big-btn btn-prev" onclick="nextCrossword()">➡️ ${I18N[lang].cross_next||'Next'}</button>
+      </div>
+    </div>
+    <div class="section-header" style="margin-top:12px"><p style="font-size:16px;color:var(--txt-l)">${lang==='uk'?'Натисніть літеру, щоб вписати її:':'Tap a letter to type it:'}</p></div>
+    <div class="cross-keyboard" id="crossKeyboard">
+      ${kbLetters.map(ch=>`<div class="cross-kb-key" onclick="crossTypeKey('${ch}')">${ch}</div>`).join('')}
+      <div class="cross-kb-key cross-kb-del" onclick="crossTypeKey('del')">⌫</div>
+    </div>
+  `;
+  crossFocusedCell=null;
+  // Auto-focus first empty cell
+  setTimeout(()=>{
+    const first=area.querySelector('.cross-cell:not(.given)');
+    if(first){first.focus();crossFocusedCell=first;}
+  },200);
+}
+
+function crossCellInput(el){
+  if(el.value.length===1){
+    const cells=[...document.querySelectorAll('.cross-cell:not(.given)')];
+    const idx=cells.indexOf(el);
+    if(idx<cells.length-1){cells[idx+1].focus();crossFocusedCell=cells[idx+1];}
+  }
+}
+function crossCellKey(e,el){
+  if(e.key==='Backspace'&&!el.value){
+    const cells=[...document.querySelectorAll('.cross-cell:not(.given)')];
+    const idx=cells.indexOf(el);
+    if(idx>0){cells[idx-1].focus();cells[idx-1].value='';crossFocusedCell=cells[idx-1];}
+  }
+}
+
+function crossTypeKey(ch){
+  if(ch==='del'){
+    // Delete current cell or go back
+    if(crossFocusedCell&&crossFocusedCell.value){
+      crossFocusedCell.value='';
+    } else {
+      const cells=[...document.querySelectorAll('.cross-cell:not(.given)')];
+      const idx=cells.indexOf(crossFocusedCell);
+      if(idx>0){crossFocusedCell=cells[idx-1];crossFocusedCell.value='';crossFocusedCell.focus();}
+    }
+    return;
+  }
+  if(!crossFocusedCell){
+    const first=document.querySelector('.cross-cell:not(.given)');
+    if(first){crossFocusedCell=first;first.focus();}
+    else return;
+  }
+  crossFocusedCell.value=ch;
+  crossFocusedCell.classList.remove('wrong','correct');
+  // Move to next empty cell
+  const cells=[...document.querySelectorAll('.cross-cell:not(.given)')];
+  const idx=cells.indexOf(crossFocusedCell);
+  if(idx<cells.length-1){crossFocusedCell=cells[idx+1];crossFocusedCell.focus();}
+}
+
+function checkCrossword(){
+  const cells=document.querySelectorAll('.cross-cell:not(.given)');
+  let allCorrect=true;
+  cells.forEach(c=>{
+    const answer=c.dataset.answer.toLowerCase();
+    const val=(c.value||'').toLowerCase();
+    if(val===answer){c.classList.remove('wrong');c.classList.add('correct');}
+    else{c.classList.remove('correct');c.classList.add('wrong');allCorrect=false;}
+  });
+  if(allCorrect){
+    const words=CROSSWORD_WORDS[lang]||CROSSWORD_WORDS.en;
+    const item=words[crossOrder[crossIdx]];
+    speakAny(item.word);
+    stats.built=(stats.built||0)+1;saveStats();updateStats();
+  }
+}
+
+function nextCrossword(){
+  crossIdx++;
+  renderCrosswordWord();
+}
+
+function crosswordHint(){
+  // Reveal one hidden letter
+  const cells=[...document.querySelectorAll('.cross-cell:not(.given):not(.correct)')];
+  const empty=cells.filter(c=>!c.value||c.value.toLowerCase()!==c.dataset.answer.toLowerCase());
+  if(empty.length){
+    const c=empty[0];
+    c.value=c.dataset.answer;
+    c.classList.add('correct');
+    c.classList.remove('wrong');
+  }
+}
+
+// ══════════════════════════════════
+// ══════════ MOUTH EXERCISES ══════
+// ══════════════════════════════════
+const MOUTH_EXERCISES=[
+  {icon:"👅",title:"Язик вперед-назад",desc:"Висуньте язик якомога далі, потім заберіть назад. Повторіть повільно.",reps:"10 разів"},
+  {icon:"👅",title:"Язик ліворуч-праворуч",desc:"Рухайте язиком від одного кутка рота до іншого. Тримайте 2 секунди з кожного боку.",reps:"10 разів"},
+  {icon:"👅",title:"Язик по колу",desc:"Обведіть язиком по внутрішній стороні губ — спочатку за годинниковою стрілкою, потім проти.",reps:"5 кіл в кожну сторону"},
+  {icon:"👅",title:"Язик до піднебіння",desc:"Притисніть кінчик язика до піднебіння і тримайте 5 секунд. Розслабте і повторіть.",reps:"10 разів"},
+  {icon:"👄",title:"Посмішка — Трубочка",desc:"Широко посміхніться, потім витягніть губи трубочкою (як для поцілунку). Чергуйте.",reps:"10 разів"},
+  {icon:"👄",title:"Надування щік",desc:"Надуйте обидві щоки повітрям, тримайте 5 секунд, потім повільно видихніть.",reps:"10 разів"},
+  {icon:"👄",title:"Щоки по черзі",desc:"Надувайте повітрям спочатку праву щоку, потім ліву. Перекочуйте повітря.",reps:"10 разів"},
+  {icon:"🗣️",title:"Голосні звуки",desc:"Повільно і чітко вимовляйте: А — О — У — И — І — Е. Тягніть кожен звук 3 секунди.",reps:"5 циклів"},
+  {icon:"🗣️",title:"Складові ланцюжки",desc:"Вимовляйте повторюючи: ПА-ПА-ПА, потім БА-БА-БА, ТА-ТА-ТА, ДА-ДА-ДА, КА-КА-КА.",reps:"Кожен склад 10 разів"},
+  {icon:"🗣️",title:"Рахунок вголос",desc:"Повільно порахуйте від 1 до 20 вголос, чітко вимовляючи кожне число.",reps:"2 рази"},
+  {icon:"😮",title:"Широке відкривання рота",desc:"Відкрийте рот якомога ширше, тримайте 5 секунд, повільно закрийте.",reps:"10 разів"},
+  {icon:"💋",title:"Поцілунок повітря",desc:"Витягніть губи і зробіть рух як при поцілунку з гучним звуком. Розслабте.",reps:"10 разів"}
+];
+
+let completedExercises=JSON.parse(localStorage.getItem('sa_mouth_done')||'[]');
+
+function renderMouthExercises(){
+  var el=document.getElementById('mouthExercises');
+  el.innerHTML=MOUTH_EXERCISES.map(function(ex,i){
+    var done=completedExercises.includes(i);
+    return '<div class="mouth-card"><div class="mc-icon">'+ex.icon+'</div><div class="mc-info"><div class="mc-title">'+ex.title+'</div><div class="mc-desc">'+ex.desc+'</div><div class="mc-reps">🔄 '+ex.reps+'</div></div><button class="mc-done '+(done?'completed':'')+'" onclick="toggleMouthDone('+i+')">'+( done?'✅ Зроблено':'☐ Зробити')+'</button></div>';
+  }).join('');
+}
+
+function toggleMouthDone(i){
+  var idx=completedExercises.indexOf(i);
+  if(idx>=0)completedExercises.splice(idx,1);
+  else completedExercises.push(i);
+  localStorage.setItem('sa_mouth_done',JSON.stringify(completedExercises));
+  renderMouthExercises();
+}
+
+// ══════════════════════════════════
+// ══════════ BREATHING ════════════
+// ══════════════════════════════════
+var breathInterval=null;
+var breathPhase=0;
+var breathCount=0;
+
+function startBreathExercise(type){
+  stopBreathExercise();
+  var circle=document.getElementById('breathCircle');
+  var text=document.getElementById('breathText');
+  var timer=document.getElementById('breathTimer');
+  var phases=type==='deep'
+    ?[{name:'ВДИХ',dur:5,cls:'inhale'},{name:'ТРИМАТИ',dur:3,cls:'hold'},{name:'ВИДИХ',dur:7,cls:'exhale'}]
+    :[{name:'ВДИХ',dur:4,cls:'inhale'},{name:'ВИДИХ',dur:4,cls:'exhale'}];
+  breathPhase=0;breathCount=0;
+  var totalCycles=type==='deep'?5:8;
+  var secInPhase=0;
+
+  function tick(){
+    var p=phases[breathPhase];
+    text.textContent=p.name;
+    timer.textContent=p.dur-secInPhase;
+    circle.className='breath-circle '+p.cls;
+    secInPhase++;
+    if(secInPhase>p.dur){
+      secInPhase=0;
+      breathPhase=(breathPhase+1)%phases.length;
+      if(breathPhase===0){breathCount++;if(breathCount>=totalCycles){stopBreathExercise();text.textContent='Чудово! 🎉';timer.textContent='';circle.className='breath-circle';return;}}
+    }
+  }
+  tick();
+  breathInterval=setInterval(tick,1000);
+}
+
+function stopBreathExercise(){
+  clearInterval(breathInterval);
+  var circle=document.getElementById('breathCircle');
+  var text=document.getElementById('breathText');
+  var timer=document.getElementById('breathTimer');
+  circle.className='breath-circle';
+  text.textContent='Натисніть кнопку';
+  timer.textContent='';
+}
+
+function renderBreathingTips(){
+  var el=document.getElementById('breathingTips');
+  var tips=[
+    {title:'🫁 Діафрагмальне дихання',desc:'Покладіть руку на живіт. Вдихайте через ніс — живіт піднімається. Видихайте через рот — живіт опускається. 10 разів.'},
+    {title:'🕯️ Вправа зі свічкою',desc:'Уявіть свічку перед собою. Повільно видихайте, намагаючись "нахилити полум\'я" але не задути. Контроль видиху.'},
+    {title:'🎈 Надування повітряної кульки',desc:'Уявіть що надуваєте кульку. Глибокий вдих через ніс, повільний сильний видих через рот. 5 разів.'},
+    {title:'📢 Тягніть звук',desc:'Глибоко вдихніть. На видиху тягніть звук "АААА" якомога довше. Засікайте час і намагайтесь побити рекорд.'},
+    {title:'🐝 Гудіння',desc:'Вдихніть через ніс. На видиху гудіть "ММММ" з закритим ротом. Відчуйте вібрацію в губах і носі.'}
+  ];
+  el.innerHTML=tips.map(function(t){
+    return '<div class="breath-tip"><h4>'+t.title+'</h4><p>'+t.desc+'</p></div>';
+  }).join('');
+}
+
+// ══════════════════════════════════
+// ══════════ JOURNAL ══════════════
+// ══════════════════════════════════
+var journalMood='';
+var journalEntries=JSON.parse(localStorage.getItem('sa_journal')||'[]');
+
+function setMood(m){
+  journalMood=m;
+  document.querySelectorAll('.mood-btn').forEach(function(b){b.classList.toggle('selected',b.textContent.includes(m))});
+}
+
+function saveJournal(){
+  var text=document.getElementById('journalText').value.trim();
+  if(!text&&!journalMood){return;}
+  var entry={date:new Date().toLocaleDateString('uk-UA',{weekday:'long',year:'numeric',month:'long',day:'numeric'}),mood:journalMood,text:text,time:Date.now()};
+  journalEntries.unshift(entry);
+  if(journalEntries.length>100)journalEntries=journalEntries.slice(0,100);
+  localStorage.setItem('sa_journal',JSON.stringify(journalEntries));
+  document.getElementById('journalText').value='';
+  journalMood='';
+  document.querySelectorAll('.mood-btn').forEach(function(b){b.classList.remove('selected')});
+  renderJournalHistory();
+}
+
+function speakJournal(){
+  var text=document.getElementById('journalText').value.trim();
+  if(text)speakAny(text);
+}
+
+function renderJournalHistory(){
+  var el=document.getElementById('journalHistory');
+  if(!journalEntries.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--txt-l);font-size:18px">Записів поки немає. Напишіть свій перший запис!</div>';return;}
+  el.innerHTML=journalEntries.slice(0,20).map(function(e){
+    return '<div class="journal-entry"><span class="je-mood">'+e.mood+'</span><div class="je-date">'+e.date+'</div><div class="je-text">'+e.text+'</div></div>';
+  }).join('');
+}
+
+// ══════════ STARTUP ══════════ (after all consts/functions defined) ══════════
+// Apply i18n for default language
+document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(I18N[lang]&&I18N[lang][k])el.textContent=I18N[lang][k]});
+document.querySelectorAll('[data-i18n-ph]').forEach(el=>{const k=el.getAttribute('data-i18n-ph');if(I18N[lang]&&I18N[lang][k])el.placeholder=I18N[lang][k]});
+syncTtsUi();filterList();updateCard();renderCategories();renderSampleImages();renderPuzzleGallery();setupDragDrop();renderAlphabet();initConstructor();
+
+// Update voice hint when going online/offline
+window.addEventListener('online',function(){updateVoiceHint()});
+window.addEventListener('offline',function(){updateVoiceHint()});
+
+// ══════════ SERVICE WORKER for offline ══════════
+// Only register when hosted on your own server (not in Claude preview or file://)
+if('serviceWorker' in navigator && location.protocol==='https:' && !location.hostname.includes('claudeusercontent')){
+  navigator.serviceWorker.register('service-worker.js').then(function(){
+    console.log('ГовориЗнову: офлайн режим активовано');
+  }).catch(function(){});
+}
+</script>
+</body>
+</html>
