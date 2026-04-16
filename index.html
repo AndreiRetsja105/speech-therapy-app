@@ -28,20 +28,11 @@ body{font-family:'Nunito',-apple-system,'Helvetica Neue',Arial,sans-serif;backgr
 .nav-top-row{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;gap:12px}
 .logo{font-family:'Quicksand';font-weight:700;font-size:26px;color:var(--pri);display:flex;align-items:center;gap:8px}
 .logo .icon{font-size:30px}
-.menu-toggle{padding:14px 24px;border:3px solid var(--pri);background:var(--pri-l);border-radius:16px;font-family:'Nunito',-apple-system,sans-serif;font-weight:800;font-size:22px;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(59,125,216,.15);color:var(--pri-d);display:flex;align-items:center;gap:8px}
+.menu-toggle{padding:14px 24px;border:3px solid var(--pri);background:var(--pri-l);border-radius:16px;font-family:'Nunito',-apple-system,sans-serif;font-weight:800;font-size:22px;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(59,125,216,.15);color:var(--pri-d);display:flex;align-items:center;gap:8px;-webkit-tap-highlight-color:rgba(0,0,0,0);touch-action:manipulation;user-select:none}
 .menu-toggle:active{transform:scale(.95)}
-.menu-toggle.open{background:var(--pri-l);border-color:var(--pri);color:var(--pri-d)}
-.nav-menu{display:none;padding:10px 16px 18px;gap:10px;flex-wrap:wrap}
-.nav-menu.open{display:flex}
-
-/* Auto-wrap iPad-friendly navbar */
-.navbar{overflow:hidden;max-height:420px;transition:max-height .35s ease, box-shadow .35s ease, opacity .35s ease}
-.navbar.nav-collapsed{max-height:8px;box-shadow:none;opacity:.98}
-.navbar.nav-collapsed .nav-top-row,.navbar.nav-collapsed .nav-menu{opacity:0;pointer-events:none}
-.navbar.nav-expanded .nav-top-row,.navbar.nav-expanded .nav-menu{opacity:1;pointer-events:auto}
-.nav-top-row,.nav-menu{transition:opacity .22s ease}
-.nav-reveal-zone{position:fixed;top:0;right:0;width:220px;height:90px;z-index:1200;background:transparent}
-.nav-top-strip{position:fixed;top:0;left:0;right:0;height:10px;z-index:1199;background:transparent}
+.menu-toggle.open{background:var(--pri);color:#fff;border-color:var(--pri-d)}
+.nav-menu{display:none;padding:10px 16px 18px;gap:10px;flex-wrap:wrap;max-height:0;overflow:hidden;transition:max-height .3s ease}
+.nav-menu.open{display:flex;max-height:800px}
 .nav-pill{padding:16px 20px;border:none;background:var(--card);font-family:'Nunito',-apple-system,sans-serif;font-weight:800;font-size:18px;color:var(--txt);border-radius:18px;cursor:pointer;transition:all .2s;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.08);display:flex;align-items:center;gap:10px;flex:1;min-width:150px;justify-content:center;border:3px solid transparent}
 .nav-pill:active{transform:scale(.95)}
 .nav-pill.active{border-color:var(--pri);background:var(--pri-l);color:var(--pri-d)}
@@ -332,8 +323,6 @@ body{font-family:'Nunito',-apple-system,'Helvetica Neue',Arial,sans-serif;backgr
     <button class="nav-pill" onclick="showPage('stats')" style="background:#E8F5E9;border-color:#A5D6A7"><span class="pill-emoji">📊</span><span class="pill-label">Прогрес</span></button>
   </div>
 </nav>
-<div class="nav-top-strip" id="navTopStrip" aria-hidden="true"></div>
-<div class="nav-reveal-zone" id="navRevealZone" aria-hidden="true"></div>
 
 <div class="container">
 
@@ -925,56 +914,28 @@ function saveStats(){localStorage.setItem('sa3_stats',JSON.stringify(stats))}
 function updateStats(){document.getElementById('statPracticed').textContent=stats.practiced;document.getElementById('statListened').textContent=stats.listened;document.getElementById('statSessions').textContent=stats.sessions;document.getElementById('statFavs').textContent=favorites.length;document.getElementById('statPuzzles').textContent=stats.puzzles||0;document.getElementById('statBuilt').textContent=stats.built||0}
 
 // ══════════ MENU TOGGLE ══════════
-const navbarEl=document.querySelector('.navbar');
-const navMenuEl=document.getElementById('navMenu');
-const menuToggleEl=document.getElementById('menuToggle');
-let navAutoCloseTimer=null;
-
-function clearNavTimer(){
-  if(navAutoCloseTimer){clearTimeout(navAutoCloseTimer);navAutoCloseTimer=null;}
-}
-function scheduleNavClose(){
-  clearNavTimer();
-  navAutoCloseTimer=setTimeout(function(){closeNavbar(true);},5000);
-}
-function openNavbar(openMenuToo){
-  if(!navbarEl)return;
-  navbarEl.classList.remove('nav-collapsed');
-  navbarEl.classList.add('nav-expanded');
-  if(openMenuToo){
-    navMenuEl.classList.add('open');
-    menuToggleEl.classList.add('open');
-    menuToggleEl.innerHTML='✕ Закрити';
-  }
-  scheduleNavClose();
-}
-function closeNavbar(forceMenuClosed){
-  if(!navbarEl)return;
-  if(forceMenuClosed){
-    navMenuEl.classList.remove('open');
-    menuToggleEl.classList.remove('open');
-    menuToggleEl.innerHTML='☰ Меню';
-  }
-  navbarEl.classList.remove('nav-expanded');
-  navbarEl.classList.add('nav-collapsed');
-  clearNavTimer();
-}
-function keepNavbarAlive(){
-  if(navbarEl && navbarEl.classList.contains('nav-expanded'))scheduleNavClose();
-}
 function toggleMenu(){
-  openNavbar(false);
-  navMenuEl.classList.toggle('open');
-  menuToggleEl.classList.toggle('open');
-  menuToggleEl.innerHTML=navMenuEl.classList.contains('open')?'✕ Закрити':'☰ Меню';
-  scheduleNavClose();
+  var menu=document.getElementById('navMenu');
+  var btn=document.getElementById('menuToggle');
+  var isOpen=menu.classList.contains('open');
+  if(isOpen){
+    menu.classList.remove('open');
+    btn.classList.remove('open');
+    btn.innerHTML='☰ Меню';
+  } else {
+    menu.classList.add('open');
+    btn.classList.add('open');
+    btn.innerHTML='✕ Закрити';
+  }
 }
 
 // ══════════ PAGE NAV ══════════
 function showPage(name){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+name).classList.add('active');
 var tabs=['dailyplan','practice','mouth','breathing','alphabet','constructor','categories','puzzle','memory','crossword','journal','favorites','stats'];var idx=tabs.indexOf(name);
 document.querySelectorAll('.nav-pill').forEach(function(p,i){p.classList.toggle('active',i===idx)});
-closeNavbar(true);
+document.getElementById('navMenu').classList.remove('open');
+document.getElementById('menuToggle').classList.remove('open');
+document.getElementById('menuToggle').innerHTML='☰ Меню';
 if(name==='dailyplan')dpRender();
 if(name==='alphabet')renderAlphabet();
 if(name==='constructor'){initConstructor();}
@@ -1916,58 +1877,6 @@ syncTtsUi();filterList();updateCard();renderCategories();renderSampleImages();re
 // Update voice hint when going online/offline
 window.addEventListener('online',function(){updateVoiceHint()});
 window.addEventListener('offline',function(){updateVoiceHint()});
-
-
-
-// ══════════ NAV AUTO WRAP / UNWRAP ══════════
-function initAutoWrapNavbar(){
-  var revealZone=document.getElementById('navRevealZone');
-  var topStrip=document.getElementById('navTopStrip');
-  if(navbarEl){
-    navbarEl.classList.add('nav-collapsed');
-    navbarEl.classList.remove('nav-expanded');
-  }
-  if(revealZone){
-    revealZone.addEventListener('mouseenter',function(){openNavbar(false);});
-    revealZone.addEventListener('click',function(){openNavbar(false);});
-    revealZone.addEventListener('touchstart',function(){openNavbar(false);},{passive:true});
-  }
-  if(topStrip){
-    topStrip.addEventListener('mouseenter',function(){openNavbar(false);});
-    topStrip.addEventListener('touchstart',function(){openNavbar(false);},{passive:true});
-  }
-  document.addEventListener('mousemove',function(e){
-    if(e.clientY<=10 || (e.clientY<=90 && e.clientX>=window.innerWidth-220)) openNavbar(false);
-  });
-  document.addEventListener('touchstart',function(e){
-    if(!e.touches || !e.touches.length) return;
-    var t=e.touches[0];
-    if(t.clientY<=12 || (t.clientY<=90 && t.clientX>=window.innerWidth-220)) openNavbar(false);
-  },{passive:true});
-  if(navbarEl){
-    navbarEl.addEventListener('pointerdown',keepNavbarAlive);
-    navbarEl.addEventListener('mouseenter',keepNavbarAlive);
-  }
-  if(navMenuEl){
-    navMenuEl.addEventListener('click',keepNavbarAlive);
-    navMenuEl.addEventListener('touchstart',keepNavbarAlive,{passive:true});
-  }
-  document.addEventListener('keydown',function(e){
-    var active=document.activeElement;
-    var isTyping=active && (active.tagName==='INPUT' || active.tagName==='TEXTAREA' || active.isContentEditable);
-    if(isTyping || /^[a-zA-Zа-яА-ЯіІїЇєЄґҐ]$/.test(e.key)) closeNavbar(true);
-  });
-  document.addEventListener('click',function(e){
-    if(e.target.closest('.constr-letter') || e.target.closest('.word-block') || e.target.closest('.cross-kb-key') || e.target.closest('.cross-cell')) closeNavbar(true);
-  });
-  document.addEventListener('touchstart',function(e){
-    if(e.target.closest('.constr-letter') || e.target.closest('.word-block') || e.target.closest('.cross-kb-key') || e.target.closest('.cross-cell')) closeNavbar(true);
-  },{passive:true});
-}
-
-window.addEventListener('load',function(){
-  initAutoWrapNavbar();
-});
 
 // ══════════ SERVICE WORKER for offline ══════════
 // Only register when hosted on your own server (not in Claude preview or file://)
