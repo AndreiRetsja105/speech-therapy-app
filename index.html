@@ -23,11 +23,14 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:'Nunito',-apple-system,'Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 
-/* ── NAV — collapsible menu ── */
-.navbar{background:var(--card);box-shadow:0 2px 8px rgba(0,0,0,.04);position:sticky;top:0;z-index:100;padding:0}
+/* ── NAV — auto-hide after 3s ── */
+.navbar{background:var(--card);box-shadow:0 2px 8px rgba(0,0,0,.06);position:fixed;top:0;left:0;right:0;z-index:100;padding:0;transition:transform .3s ease,opacity .3s ease}
+.navbar.hidden{transform:translateY(-100%);opacity:0;pointer-events:none}
 .nav-top-row{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;gap:8px}
 .logo{font-family:'Quicksand',-apple-system,sans-serif;font-weight:700;font-size:20px;color:var(--pri);display:flex;align-items:center;gap:6px}
 .logo .icon{font-size:24px}
+.nav-show-btn{position:fixed;top:8px;right:8px;z-index:99;width:44px;height:44px;border:none;border-radius:12px;background:var(--pri);color:#fff;font-size:22px;font-weight:800;cursor:pointer;box-shadow:0 3px 12px rgba(59,125,216,.3);display:none;align-items:center;justify-content:center;touch-action:manipulation;-webkit-tap-highlight-color:transparent;opacity:0.85}
+.nav-show-btn.visible{display:flex}
 .menu-toggle{padding:8px 16px;border:2px solid var(--pri);background:var(--pri-l);border-radius:12px;font-family:'Nunito',-apple-system,sans-serif;font-weight:800;font-size:16px;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(59,125,216,.1);color:var(--pri-d);display:flex;align-items:center;gap:6px;-webkit-tap-highlight-color:rgba(0,0,0,0);touch-action:manipulation;user-select:none}
 .menu-toggle:active{transform:scale(.95)}
 .menu-toggle.open{background:var(--pri);color:#fff;border-color:var(--pri-d)}
@@ -38,7 +41,7 @@ body{font-family:'Nunito',-apple-system,'Helvetica Neue',Arial,sans-serif;backgr
 .nav-pill .pill-emoji{font-size:32px;line-height:1}
 .nav-pill .pill-label{font-size:17px}
 
-.container{max-width:1200px;margin:0 auto;padding:22px}
+.container{max-width:1200px;margin:0 auto;padding:52px 22px 22px}
 .section-header{margin-bottom:20px}
 .section-header h2{font-family:'Quicksand';font-weight:700;font-size:30px}
 .section-header p{color:var(--txt-l);font-size:18px;margin-top:4px}
@@ -145,7 +148,7 @@ body{font-family:'Nunito',-apple-system,'Helvetica Neue',Arial,sans-serif;backgr
 .alpha-switch.active{border-color:var(--pri);background:var(--pri-l);color:var(--pri-d)}
 
 /* ── SENTENCE BUILDER — BIG ── */
-.constructor-area{background:var(--card);border-radius:var(--r);box-shadow:var(--sh-lg);padding:16px;margin-bottom:14px;position:sticky;top:46px;z-index:50}
+.constructor-area{background:var(--card);border-radius:var(--r);box-shadow:var(--sh-lg);padding:16px;margin-bottom:14px;position:sticky;top:8px;z-index:50}
 .sentence-display{min-height:56px;background:var(--bg);border-radius:var(--rs);padding:12px;margin-bottom:12px;display:flex;align-items:center;flex-wrap:wrap;gap:8px}
 .sent-placeholder{color:var(--txt-l);font-size:18px}
 .sent-word{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:var(--card);border:2.5px solid var(--pri);border-radius:14px;font-family:'Quicksand',-apple-system,sans-serif;font-weight:800;font-size:22px;color:var(--pri-d);box-shadow:var(--sh);animation:letterPop .25s ease;cursor:pointer;transition:all .15s}
@@ -309,6 +312,9 @@ body{font-family:'Nunito',-apple-system,'Helvetica Neue',Arial,sans-serif;backgr
 </style>
 </head>
 <body>
+
+<!-- Small corner button — shows when navbar is hidden -->
+<button class="nav-show-btn" id="navShowBtn" ontouchend="event.preventDefault();showNavbar()" onclick="showNavbar()">☰</button>
 
 <nav class="navbar" id="navbar">
   <div class="nav-top-row">
@@ -909,8 +915,33 @@ function selectCategory(c){selectedCategory=c;currentIndex=0;filterList();update
 function saveStats(){localStorage.setItem('sa3_stats',JSON.stringify(stats))}
 function updateStats(){document.getElementById('statPracticed').textContent=stats.practiced;document.getElementById('statListened').textContent=stats.listened;document.getElementById('statSessions').textContent=stats.sessions;document.getElementById('statFavs').textContent=favorites.length;document.getElementById('statPuzzles').textContent=stats.puzzles||0;document.getElementById('statBuilt').textContent=stats.built||0}
 
-// ══════════ MENU TOGGLE ══════════
+// ══════════ NAVBAR AUTO-HIDE ══════════
+var navbarTimer=null;
 var menuOpen=false;
+
+function showNavbar(){
+  var nav=document.getElementById('navbar');
+  var cornerBtn=document.getElementById('navShowBtn');
+  nav.classList.remove('hidden');
+  cornerBtn.classList.remove('visible');
+  // Auto-hide after 3 seconds (unless menu is open)
+  clearTimeout(navbarTimer);
+  navbarTimer=setTimeout(function(){
+    if(!menuOpen) hideNavbar();
+  },3000);
+}
+
+function hideNavbar(){
+  if(menuOpen) return; // don't hide while menu is open
+  var nav=document.getElementById('navbar');
+  var cornerBtn=document.getElementById('navShowBtn');
+  nav.classList.add('hidden');
+  cornerBtn.classList.add('visible');
+}
+
+// Auto-hide navbar 3 seconds after page load
+setTimeout(hideNavbar,3000);
+
 var MENU_HTML='<div class="nav-menu">'+
   '<button class="nav-pill" onclick="showPage(\'constructor\')" style="background:#E0F2F1;border-color:#80CBC4"><span class="pill-emoji">🧱</span><span class="pill-label">Конструктор</span></button>'+
   '<button class="nav-pill" onclick="showPage(\'dailyplan\')" style="background:#E8F5E9;border-color:#66BB6A"><span class="pill-emoji">📅</span><span class="pill-label">План</span></button>'+
@@ -931,6 +962,7 @@ function toggleMenu(){
   var container=document.getElementById('navMenu');
   var btn=document.getElementById('menuToggle');
   menuOpen=!menuOpen;
+  clearTimeout(navbarTimer); // stop auto-hide while menu is open
   if(menuOpen){
     container.innerHTML=MENU_HTML;
     btn.innerHTML='✕ Закрити';
@@ -941,6 +973,8 @@ function toggleMenu(){
     btn.innerHTML='☰ Меню';
     btn.style.background='';
     btn.style.color='';
+    // Auto-hide after closing menu
+    navbarTimer=setTimeout(hideNavbar,2000);
   }
 }
 
@@ -952,6 +986,8 @@ function closeMenu(){
   btn.style.background='';
   btn.style.color='';
   menuOpen=false;
+  // Hide navbar after selecting a page
+  setTimeout(hideNavbar,500);
 }
 
 // ══════════ PAGE NAV ══════════
