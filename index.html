@@ -1225,23 +1225,29 @@ let typingWord=''; // current word being typed letter by letter
 
 function renderConstructorLetters(){
   const grid=document.getElementById('constrLetterGrid');
-  const letters=lang==='uk'
-    ? UA_ALPHA.map(l=>l.small).concat(["'"])
-    : 'abcdefghijklmnopqrstuvwxyz'.split('');
-  grid.innerHTML=letters.map(ch=>{
+  const letters=UA_ALPHA.map(l=>l.small).concat(["'"]);
+  const numbers='1234567890'.split('');
+  var html=letters.map(ch=>{
     const eCh=encodeURIComponent(ch);
     return `<div class="constr-letter" onclick="addTypingLetter(decodeURIComponent('${eCh}'))">
       <div class="cl-char">${ch}</div>
     </div>`;
-  }).join('') + `<div class="constr-letter constr-special" style="background:#D4EDDA;border-color:var(--ok)" onclick="finishTypingWord()">
+  }).join('');
+  // Add numbers — yellow style
+  html+=numbers.map(n=>`<div class="constr-letter" style="background:#FFF9C4;border-color:#F9D71C" onclick="addTypingLetter('${n}')"><div class="cl-char">${n}</div></div>`).join('');
+  // Special buttons
+  html+=`<div class="constr-letter constr-special" style="background:#D4EDDA;border-color:var(--ok)" onclick="finishTypingWord()">
     <div class="cl-char" style="font-size:20px;color:var(--ok)">✓</div>
-    <div class="cl-label" style="color:#22543D">${lang==='uk'?'Додати':'Add'}</div>
-  </div>` + `<div class="constr-letter constr-special" style="background:#FDE8E8;border-color:var(--danger)" onclick="clearTypingWord()">
-    <div class="cl-char" style="font-size:26px;color:var(--danger)">⌫</div>
-    <div class="cl-label" style="color:#C53030">${lang==='uk'?'Стерти':'Delete'}</div>
-  </div>` + `<div class="constr-letter constr-space" style="background:#DBEAFE;border-color:var(--pri)" onclick="addTypingLetter(' ');finishTypingWord()">
-    <div class="cl-char" style="font-size:18px;color:var(--pri-d)">⎵ ${lang==='uk'?'Пробіл':'Space'}</div>
+    <div class="cl-label" style="color:#22543D">Додати</div>
   </div>`;
+  html+=`<div class="constr-letter constr-special" style="background:#FDE8E8;border-color:var(--danger)" onclick="clearTypingWord()">
+    <div class="cl-char" style="font-size:26px;color:var(--danger)">⌫</div>
+    <div class="cl-label" style="color:#C53030">Стерти</div>
+  </div>`;
+  html+=`<div class="constr-letter constr-space" style="background:#DBEAFE;border-color:var(--pri)" onclick="addTypingLetter(' ');finishTypingWord()">
+    <div class="cl-char" style="font-size:18px;color:var(--pri-d)">⎵ Пробіл</div>
+  </div>`;
+  grid.innerHTML=html;
 }
 
 function addTypingLetter(ch){
@@ -1500,6 +1506,7 @@ function renderCrosswordWord(){
     <div class="section-header" style="margin-top:12px"><p style="font-size:16px;color:var(--txt-l)">${lang==='uk'?'Натисніть літеру, щоб вписати її:':'Tap a letter to type it:'}</p></div>
     <div class="cross-keyboard" id="crossKeyboard">
       ${kbLetters.map(ch=>`<div class="cross-kb-key" onclick="crossTypeKey('${ch}')">${ch}</div>`).join('')}
+      ${'1234567890'.split('').map(n=>`<div class="cross-kb-key" style="background:#FFF9C4;border-color:#F9D71C" onclick="crossTypeKey('${n}')">${n}</div>`).join('')}
       <div class="cross-kb-key cross-kb-del" onclick="crossTypeKey('del')">⌫</div>
     </div>
   `;
@@ -1690,10 +1697,16 @@ function renderJournalKeyboard(){
   var kb=document.getElementById('journalKeyboard');
   if(!kb) return;
   var letters='абвгґдеєжзиіїйклмнопрстуфхцчшщьюя'.split('');
+  var numbers='1234567890'.split('');
   var html='';
   letters.forEach(function(ch){
     html+='<div class="jk-key" onclick="jkType(\''+ch+'\')">'+ch+'</div>';
   });
+  // Numbers row — yellow
+  numbers.forEach(function(n){
+    html+='<div class="jk-key" style="background:#FFF9C4;border-color:#F9D71C" onclick="jkType(\''+n+'\')">'+n+'</div>';
+  });
+  // Punctuation and special keys
   html+='<div class="jk-key jk-special" onclick="jkType(\'.\')">.</div>';
   html+='<div class="jk-key jk-special" onclick="jkType(\',\')">,</div>';
   html+='<div class="jk-key jk-special" onclick="jkType(\'!\')">!</div>';
